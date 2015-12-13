@@ -7,7 +7,8 @@
                  [reagent "0.5.1"]
                  [ring/ring-core "1.4.0"]]
   :plugins [[lein-cljsbuild "1.1.1"]
-            [lein-figwheel "0.5.0-SNAPSHOT"]]
+            [lein-figwheel "0.5.0-SNAPSHOT"]
+            [lein-sassy "1.0.7"]]
 
   :clean-targets ^{:protect false} ["resources/main.js"
                                     "resources/public/js/ui-core.js"
@@ -44,6 +45,10 @@
                 :optimizations :simple
                 :cache-analysis true
                 :main "ui.core"}}]}
+
+  :sass {:src "ui_src/stylesheets"
+         :dst "resources/public/css"}
+
   :figwheel {:http-server-root "public"
              :ring-handler tools.figwheel-middleware/app
              :server-port 3449})

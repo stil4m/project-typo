@@ -7,3 +7,4 @@ figwheel_server.log
 
 resources/main.js
 resources/public/js/*
+resources/public/css/*
