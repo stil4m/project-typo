@@ -8,7 +8,7 @@
                  [ring/ring-core "1.4.0"]]
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-SNAPSHOT"]
-            [lein-sassy "1.0.7"]]
+            [lein-less "1.7.5"]]
 
   :clean-targets ^{:protect false} ["resources/main.js"
                                     "resources/public/js/ui-core.js"
