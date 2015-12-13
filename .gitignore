@@ -4,3 +4,6 @@ figwheel_server.log
 
 *.iml
 .idea
+
+resources/main.js
+resources/public/js/*
