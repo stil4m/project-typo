@@ -1,6 +1,15 @@
 # project-typo
 
-Buiding a hackable chat client during a hackaton.
+Building a hackable chat client during a hackaton.
+
+## TODO Preparation Hackaton
+
+* Setup Server with single websocket and in-memory conversation
+* Add [Sassy](https://github.com/vladh/lein-sassy)
+* Add [Photon](http://photonkit.com/)
+* Add app state, basic handlers and subs.
+* Add basic UI.
+
 
 ## Installation
 
