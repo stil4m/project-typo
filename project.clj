@@ -5,9 +5,11 @@
                  [org.clojure/clojurescript "1.7.189"]
                  [figwheel "0.5.0-2"]
                  [reagent "0.5.1"]
-                 [ring/ring-core "1.4.0"]]
+                 [re-frame "0.4.1"]
+                 [ring/ring-core "1.4.0"]
+                 [secretary "1.2.3"]]
   :plugins [[lein-cljsbuild "1.1.1"]
-            [lein-figwheel "0.5.0-SNAPSHOT"]
+            [lein-figwheel "0.5.0-2"]
             [lein-less "1.7.5"]]
 
   :clean-targets ^{:protect false} ["resources/main.js"
@@ -46,9 +48,10 @@
                 :cache-analysis true
                 :main "ui.core"}}]}
 
-  :sass {:src "ui_src/stylesheets"
-         :dst "resources/public/css"}
+  :less {:source-paths ["ui_src/stylesheets"]
+         :target-path "resources/public/css"}
 
   :figwheel {:http-server-root "public"
              :ring-handler tools.figwheel-middleware/app
+             :css-dirs ["resources/public/css"]
              :server-port 3449})
