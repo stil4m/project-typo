@@ -13,6 +13,12 @@
    :history (cons (:active db) (:history db))})
 
 (defn set-route
+  [_ route]
+  {:active route
+   :future []
+   :history []})
+
+(defn add-route
   [db route]
   (let [old-active (:active db)]
     (if (= old-active route)

@@ -5,6 +5,11 @@
 (secretary/reset-routes!)
 (secretary/set-config! :prefix "#!")
 
+(defroute login "/login" {:as params}
+  {:view [:login]
+   :params params
+   :query-params (:query-params params)})
+
 (defroute main "/main" {:as params}
   {:view [:main]
    :params params

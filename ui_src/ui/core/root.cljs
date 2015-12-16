@@ -9,6 +9,10 @@
             [ui.core.handlers]
             [ui.core.subs]
 
+   ;Login
+            [ui.login.handlers]
+            [ui.login.subs]
+
    ;Routing
             [ui.routing.handlers]
             [ui.routing.subs]
@@ -18,19 +22,6 @@
             [ui.core.routes :as routes]))
 
 (enable-console-print!)
-
-(defn root-component
-  []
-  (let [conversation (subscribe [:current-conversation])]
-    (fn []
-      [:div
-       [:p.foo "hello world"]
-       [:a {:on-click #(do
-                        ;(.preventDefault %)
-                        (secretary/dispatch! "/settings")
-                        nil)}
-        "Settings"]
-       [:p (str @conversation)]])))
 
 (defn render
   []

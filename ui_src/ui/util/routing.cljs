@@ -18,13 +18,25 @@
   (prevent-and-dispatch e :routing/go-forward)
   (.preventDefault e))
 
-(defn go-to-route
+(defn nav-to-route
   [f]
-  (dispatch [:routing/set-route (secretary/dispatch! (f))]))
+  (dispatch [:routing/add-route (secretary/dispatch! (f))]))
 
-(defn go-to-route-fn
+(defn nav-to-route-fn
   [f]
   (fn [e]
     (.preventDefault e)
-    (go-to-route f)
+    (nav-to-route f)
+    nil))
+
+(defn set-route
+  [f]
+  (dispatch [:routing/add-route (secretary/dispatch! (f))]))
+
+(defn set-route-fn
+  [f]
+  (fn [e]
+    (when e
+      (.preventDefault e))
+    (set-route f)
     nil))

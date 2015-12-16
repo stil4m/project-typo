@@ -49,6 +49,7 @@
        (map
          (fn [m] [message->list-item m])
          (:messages current-conversation)))]]])
+
 (defn render
   []
   (let [route (subscribe [:route-state])
@@ -60,7 +61,11 @@
         [:div.toolbar-actions
          [page-control/history-btn-group @route]
          [:button.btn.btn-default.pull-right
-          {:on-click (routing/go-to-route-fn routes/settings)}
+          {:on-click (routing/set-route-fn routes/login)}     ;TODO Should have logout action
+          [:span.icon.icon-logout.icon-text]
+          "Logout"]
+         [:button.btn.btn-default.pull-right
+          {:on-click (routing/nav-to-route-fn routes/settings)}
           [:span.icon.icon-cog.icon-text]
           "Settings"]]]
        [:div.window-content

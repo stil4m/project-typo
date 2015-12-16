@@ -20,6 +20,11 @@
   transitions/go-forward)
 
 (register-handler
+  :routing/add-route
+  [trim-v (path [:route])]
+  (flat-apply-fn transitions/add-route))
+
+(register-handler
   :routing/set-route
   [trim-v (path [:route])]
   (flat-apply-fn transitions/set-route))

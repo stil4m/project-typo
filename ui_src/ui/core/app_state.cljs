@@ -7,6 +7,10 @@
    :user {:username "stil4m"
           :full-name "Mats Stijlaart"
           :description ""}
+   :login-form {:loading false
+                :error nil
+                :data {:username "matstijl"
+                       :password "test1234"}}
    :conversation {:people [{:id "tomtheun"
                             :full-name "Tomas Theunissen"}
                            {:id "mitkuijp"

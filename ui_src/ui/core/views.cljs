@@ -2,6 +2,7 @@
   (:require [re-frame.core :refer [subscribe]]
             [ui.settings.view :as settings]
             [ui.main.view :as main]
+            [ui.login.views :as login]
             [ui.core.routes :as routes]
             [ui.util.routing :as routing]))
 
@@ -9,6 +10,7 @@
 
 (defmethod views :settings [_] settings/render)
 (defmethod views :main [_] main/render)
+(defmethod views :login [_] login/render)
 
 
 (defn route->view [{:keys [view query-params params]}]
@@ -28,4 +30,4 @@
     (fn []
       (if @active-route
         (route->view @active-route)
-        (routing/go-to-route routes/main)))))
+        (routing/set-route routes/login)))))
