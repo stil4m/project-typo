@@ -1,7 +1,10 @@
-(ns ui.app-state)
+(ns ui.core.app-state)
 
 (def default-app-state
-  {:user {:username "stil4m"
+  {:route {:history []
+           :active nil
+           :future []}
+   :user {:username "stil4m"
           :full-name "Mats Stijlaart"
           :description ""}
    :conversation {:people [{:id "tomtheun"

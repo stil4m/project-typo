@@ -1,9 +1,9 @@
-(ns ui.views
-  (:require [re-frame.core :refer [subscribe dispatch]]
+(ns ui.core.views
+  (:require [re-frame.core :refer [subscribe]]
             [ui.settings.view :as settings]
             [ui.main.view :as main]
-            [ui.routes :as routes]
-            [secretary.core :as secretary]))
+            [ui.core.routes :as routes]
+            [ui.util.routing :as routing]))
 
 (defmulti views identity)
 
@@ -28,4 +28,4 @@
     (fn []
       (if @active-route
         (route->view @active-route)
-        (dispatch [:set-route (secretary/dispatch! (routes/main))])))))
+        (routing/go-to-route routes/main)))))

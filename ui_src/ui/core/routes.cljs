@@ -1,16 +1,8 @@
-(ns ui.routes
+(ns ui.core.routes
   (:require-macros [secretary.core :refer [defroute]])
-  (:require [re-frame.core :refer [dispatch
-                                   dispatch-sync]]
-            [reagent.core :as reagent]
-            [secretary.core :as secretary]
-            [goog.events])
-  (:import
-    [goog.history Html5History EventType]
-    [goog History]))
+  (:require [secretary.core :as secretary]))
 
 (secretary/reset-routes!)
-
 (secretary/set-config! :prefix "#!")
 
 (defroute main "/main" {:as params}

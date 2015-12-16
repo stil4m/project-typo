@@ -361,9 +361,20 @@ h6 {
   background-image: -webkit-linear-gradient(top, #fcfcfc 0%, #f1f1f1 100%);
   background-image: linear-gradient(to bottom, #fcfcfc 0%, #f1f1f1 100%);
 }
-.btn-default:active {
+.btn-default:active:not(.disabled) {
   background-color: #ddd;
   background-image: none;
+}
+
+/* Added this patch from commit3e23a63efc81193f7a01aef9308afce389559721 */
+.btn.disabled {
+  color: #b7b7b7;
+}
+.btn.disabled .icon {
+  color: #b7b7b7;
+}
+.btn-group .disabled .icon {
+  color: #b7b7b7;
 }
 
 .btn-primary,
