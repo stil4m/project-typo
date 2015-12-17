@@ -27,7 +27,7 @@
   :login-success
   [trim-v
    (path [:user])
-   (after (routing/set-route routes/main))]
+   (after (routing/set-route-fn routes/main))]
   (fn [_ user]
     user))
 

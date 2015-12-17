@@ -31,12 +31,12 @@
 
 (defn set-route
   [f]
-  (dispatch [:routing/add-route (secretary/dispatch! (f))]))
+  (dispatch [:routing/set-route (secretary/dispatch! (f))]))
 
 (defn set-route-fn
   [f]
   (fn [e]
-    (when e
+    (when (and e (.-preventDefault e))
       (.preventDefault e))
     (set-route f)
     nil))
