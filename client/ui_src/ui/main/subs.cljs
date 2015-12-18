@@ -4,12 +4,12 @@
 
 
 (register-sub
- :conversation-list
+ :room-list
  (fn [db]
-   (reaction (vals (get-in @db [:conversations])))))
+   (reaction (vals (get-in @db [:rooms])))))
 
 (register-sub
- :current-conversation
+ :current-room
  (fn [db]
-   (reaction (when (:current-conversation @db)
-               (get-in @db [:conversations (:current-conversation @db)])))))
+   (reaction (when (:current-room @db)
+               (get-in @db [:rooms (:current-room @db)])))))

@@ -2,11 +2,11 @@
   (:require [re-frame.core :refer [dispatch]]
             [ui.util.events :as util]))
 
-(defn select-conversation
-  [conversation]
+(defn select-room
+  [room]
   (fn [e]
     (.preventDefault e)
-    (dispatch [:set-active-conversation conversation])))
+    (dispatch [:set-active-room room])))
 
 (defn handle-message-input-key-stroke
   [message]

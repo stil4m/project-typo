@@ -18,30 +18,30 @@
   [:footer.toolbar.toolbar-footer
    [:h1.title "Version: 0.1.0"]])
 
-(defn chats-sidebar-pane-conversation
-  [active-converstation conversation]
+(defn chats-sidebar-pane-room
+  [active-converstation room]
   [:li.list-group-item
-   {:key (:id conversation)
-    :on-click (actions/select-conversation conversation)
-    :class (when (= (:id active-converstation) (:id conversation))
+   {:key (:id room)
+    :on-click (actions/select-room room)
+    :class (when (= (:id active-converstation) (:id room))
              "active")}
    [:img.img-circle.media-object.pull-left {:width "32px" :height "32px"}]
    [:div.media-body
-    [:strong (:name conversation)]
-    (when-let [description (:description conversation)]
+    [:strong (:name room)]
+    (when-let [description (:description room)]
       [:p description])]])
 
 (defn chats-sidebar-pane
-  [active-converstation conversation-list]
+  [active-converstation room-list]
   [:div.pane.pane-sm.sidebar
    [:ul.list-group
     (into
      [:li.list-group-header
       [:input.form-control {:type :text}]]
-     (map (partial chats-sidebar-pane-conversation active-converstation) conversation-list))]])
+     (map (partial chats-sidebar-pane-room active-converstation) room-list))]])
 
 (defn chat-message-pane
-  [current-conversation]
+  [current-room]
   ^{:class "chat-message-pane"}
   [:div.message-table-wrapper
    [:table.messages-table
@@ -49,7 +49,7 @@
      [:tbody]
      (map
       (fn [m] [message->list-item m])
-      (:messages current-conversation)))]])
+      (:messages current-room)))]])
 
 (defn message-input
   [conversatation]
@@ -63,8 +63,8 @@
 (defn render
   []
   (let [route (subscribe [:route-state])
-        current-conversation (subscribe [:current-conversation])
-        conversation-list (subscribe [:conversation-list])]
+        current-room (subscribe [:current-room])
+        room-list (subscribe [:room-list])]
     (fn []
       [:div.window
        [:div.toolbar.toolbar-header
@@ -81,8 +81,8 @@
           "Settings"]]]
        [:div.window-content
         [:div.pane-group
-         [chats-sidebar-pane @current-conversation @conversation-list]
+         [chats-sidebar-pane @current-room @room-list]
          [:div.messages-container.pane
-          [chat-message-pane @current-conversation]
-          [message-input @current-conversation]]]]
+          [chat-message-pane @current-room]
+          [message-input @current-room]]]]
        [footer]])))

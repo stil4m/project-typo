@@ -7,39 +7,39 @@
             [adzerk.cljs-console :as log :include-macros true]))
 
 
-(defn listen-for-new-conversation
-  [db [conversation]]
-  (log/info "TODO | Start listen to messages on conversation: ~{(:id conversation)}"))
+(defn listen-for-new-room
+  [db [room]]
+  (log/info "TODO | Start listen to messages on room: ~{(:id room)}"))
 
-(defn send-message-for-current-conversation
+(defn send-message-for-current-room
   [db [message]]
-  (let [conversation (get-in  db [:conversations (:current-conversation db)])]
-    (log/info "TODO | Send message for conversation:")
-    (log/info "TODO | - conversation: ~{(:id conversation)}")
+  (let [room (get-in  db [:rooms (:current-room db)])]
+    (log/info "TODO | Send message for room:")
+    (log/info "TODO | - room: ~{(:id room)}")
     (log/info "TODO | - message: ~{message}")))
 
 (register-handler
- :set-active-conversation
+ :set-active-room
  [trim-v
-  (after listen-for-new-conversation)]
+  (after listen-for-new-room)]
  (fn [db [converstation]]
-   (-> (assoc db :current-conversation (:id converstation))
-       (assoc :open-conversations (conj (:open-conversations db) (:id converstation))))))
+   (-> (assoc db :current-room (:id converstation))
+       (assoc :open-rooms (conj (:open-rooms db) (:id converstation))))))
 
 (register-handler
  :send-current-message
  [trim-v
-  (after send-message-for-current-conversation)]
+  (after send-message-for-current-room)]
  (fn [db [message]]
-   (-> (update-in db [:conversations (:current-conversation db)] dissoc :current-message)
-       (update-in [:conversations (:current-conversation db) :messages] conj {:sending true
+   (-> (update-in db [:rooms (:current-room db)] dissoc :current-message)
+       (update-in [:rooms (:current-room db) :messages] conj {:sending true
                                                                               :user (get-in db [:user :username])
                                                                               :message message})
-       (update-in [:message-queue] conj {:conversation (:current-conversation db)
+       (update-in [:message-queue] conj {:room (:current-room db)
                                          :message message}))))
 
 (register-handler
  :update-current-message
  [trim-v]
  (fn [db [message]]
-   (update-in db [:conversations (:current-conversation db)] assoc :current-message message)))
+   (update-in db [:rooms (:current-room db)] assoc :current-message message)))
