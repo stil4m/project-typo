@@ -12,7 +12,6 @@ Building a hackable chat client during a hackaton.
 ## Installation
 
 ```
-gem install foreman
 npm install electron-prebuilt -g
 ```
 
@@ -21,8 +20,10 @@ npm install electron-prebuilt -g
 Execute these commandos in two separate consoles:
 
 ```
-foreman start
+lein trampoline cljsbuild auto electron-dev
+lein trampoline figwheel frontend-dev
 electron .
+lein less auto
 ````
 
 ##Release
