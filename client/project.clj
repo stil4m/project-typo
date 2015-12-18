@@ -29,12 +29,14 @@
                 :cache-analysis true}}
     {:source-paths ["ui_src" "dev_src"]
      :id "frontend-dev"
+     :figwheel true
      :compiler {:output-to "resources/public/js/ui-core.js"
                 :output-dir "resources/public/js/ui-out"
-                :source-map "resources/public/js/ui-core.js.map"
+                :source-map true
                 :asset-path "js/ui-out"
                 :optimizations :none
                 :cache-analysis true
+                :recompile-dependents false
                 :main "dev.core"}}
     {:source-paths ["electron_src"]
      :id "electron-release"
