@@ -6,7 +6,6 @@
   []
   (let [login-form-state (subscribe [:login-form-state])]
     (fn []
-      (.log js/console (str @login-form-state))
       [:div.window
        [:div.window-content.login-screen
         [:div.login-form-container
@@ -19,11 +18,11 @@
                                  :value (get-in @login-form-state [:data :username])
                                  :placeholder "Username"}]]
           [:div.form-group
-           [:label [:strong "Password"]]
-           [:input.form-control {:type :password
-                                 :on-change actions/set-password
-                                 :value (get-in @login-form-state [:data :password])
-                                 :placeholder "Password"}]]
+           [:label [:strong "Full Name"]]
+           [:input.form-control {:type :test
+                                 :on-change actions/set-full-name
+                                 :value (get-in @login-form-state [:data :full-name])
+                                 :placeholder "Full Name"}]]
           [:div
            [:button.btn.btn-primary.pull-right
             {:type :submit}

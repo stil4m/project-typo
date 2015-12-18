@@ -7,11 +7,14 @@
 
    ;Core
             [ui.core.handlers]
-            [ui.core.subs]
 
    ;Login
             [ui.login.handlers]
             [ui.login.subs]
+
+   ;Main
+            [ui.main.handlers]
+            [ui.main.subs]
 
    ;Routing
             [ui.routing.handlers]

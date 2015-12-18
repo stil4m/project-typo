@@ -10,7 +10,7 @@
 (defn validate-login-data-for-submission
   [db]
   ;TODO Add validation
-  (let [next-action (if (and (:username (:data db)) (:password (:data db)))
+  (let [next-action (if (and (:username (:data db)) (:full-name (:data db)))
                       :login-submission-data-valid
                       :login-submission-data-invalid)]
     (dispatch [next-action])))

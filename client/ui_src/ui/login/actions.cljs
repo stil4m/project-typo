@@ -11,9 +11,9 @@
   [e]
   (set-login-form-prop-for-event e :username))
 
-(defn set-password
+(defn set-full-name
   [e]
-  (set-login-form-prop-for-event e :password))
+  (set-login-form-prop-for-event e :full-name))
 
 (defn submit-form
   [e]

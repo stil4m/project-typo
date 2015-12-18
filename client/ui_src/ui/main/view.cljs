@@ -1,6 +1,7 @@
 (ns ui.main.view
   (:require [re-frame.core :refer [subscribe dispatch]]
             [ui.core.routes :as routes]
+            [ui.main.actions :as actions]
             [ui.component.page-control :as page-control]
             [ui.util.routing :as routing]))
 
@@ -17,27 +18,27 @@
   [:footer.toolbar.toolbar-footer
    [:h1.title "Version: 0.1.0"]])
 
+(defn chats-sidebar-pane-conversation
+  [active-converstation conversation]
+  [:li.list-group-item
+   {:key (:id conversation)
+    :on-click (actions/select-conversation conversation)
+    :class (when (= (:id active-converstation) (:id conversation))
+             "active")}
+   [:img.img-circle.media-object.pull-left {:width "32px" :height "32px"}]
+   [:div.media-body
+    [:strong (:name conversation)]
+    (when-let [description (:description conversation)]
+      [:p description])]])
+
 (defn chats-sidebar-pane
-  []
+  [active-converstation conversation-list]
   [:div.pane.pane-sm.sidebar
    [:ul.list-group
-    [:li.list-group-header
-     [:input.form-control {:type :text}]]
-    [:li.list-group-item
-     [:img.img-circle.media-object.pull-left {:width "32px" :height "32px"}]
-     [:div.media-body
-      [:strong "List item title"]
-      [:p "Lorem ipssum dolor sit amet."]]]
-    [:li.list-group-item
-     [:img.img-circle.media-object.pull-left {:width "32px" :height "32px"}]
-     [:div.media-body
-      [:strong "List item title"]
-      [:p "Lorem ipssum dolor sit amet."]]]
-    [:li.list-group-item
-     [:img.img-circle.media-object.pull-left {:width "32px" :height "32px"}]
-     [:div.media-body
-      [:strong "List item title"]
-      [:p "Lorem ipssum dolor sit amet."]]]]])
+    (into
+     [:li.list-group-header
+      [:input.form-control {:type :text}]]
+     (map (partial chats-sidebar-pane-conversation active-converstation) conversation-list))]])
 
 (defn chat-message-pane
   [current-conversation]
@@ -45,15 +46,16 @@
    [:div.message-table-wrapper
     [:table.messages-table
      (into
-       [:tbody]
-       (map
-         (fn [m] [message->list-item m])
-         (:messages current-conversation)))]]])
+      [:tbody]
+      (map
+       (fn [m] [message->list-item m])
+       (:messages current-conversation)))]]])
 
 (defn render
   []
   (let [route (subscribe [:route-state])
-        current-conversation (subscribe [:current-conversation])]
+        current-conversation (subscribe [:current-conversation])
+        conversation-list (subscribe [:conversation-list])]
     (fn []
       [:div.window
        [:div.toolbar.toolbar-header
@@ -61,7 +63,7 @@
         [:div.toolbar-actions
          [page-control/history-btn-group @route]
          [:button.btn.btn-default.pull-right
-          {:on-click (routing/set-route-fn routes/login)}     ;TODO Should have logout action
+          {:on-click (routing/set-route-fn routes/login)}   ;TODO Should have logout action
           [:span.icon.icon-logout.icon-text]
           "Logout"]
          [:button.btn.btn-default.pull-right
@@ -70,6 +72,6 @@
           "Settings"]]]
        [:div.window-content
         [:div.pane-group
-         [chats-sidebar-pane]
+         [chats-sidebar-pane @current-conversation @conversation-list]
          [chat-message-pane @current-conversation]]]
        [footer]])))
