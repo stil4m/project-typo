@@ -9,7 +9,8 @@
                  [ring/ring-core "1.4.0"]
                  [secretary "1.2.3"]
                  [adzerk/cljs-console "0.1.1" :scope "provided"]
-                 [tranchis/figwheel-sidecar "0.5.0-2"]]
+                 [tranchis/figwheel-sidecar "0.5.0-2"]
+                 [com.cognitect/transit-cljs "0.8.232"]]
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-2"]
             [lein-less "1.7.5"]]
@@ -28,12 +29,14 @@
                 :cache-analysis true}}
     {:source-paths ["ui_src" "dev_src"]
      :id "frontend-dev"
+     :figwheel true
      :compiler {:output-to "resources/public/js/ui-core.js"
                 :output-dir "resources/public/js/ui-out"
-                :source-map "resources/public/js/ui-core.js.map"
+                :source-map true
                 :asset-path "js/ui-out"
                 :optimizations :none
                 :cache-analysis true
+                :recompile-dependents false
                 :main "dev.core"}}
     {:source-paths ["electron_src"]
      :id "electron-release"
