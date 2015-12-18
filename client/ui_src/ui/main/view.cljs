@@ -42,14 +42,23 @@
 
 (defn chat-message-pane
   [current-conversation]
-  [:div.pane
-   [:div.message-table-wrapper
-    [:table.messages-table
-     (into
-      [:tbody]
-      (map
-       (fn [m] [message->list-item m])
-       (:messages current-conversation)))]]])
+  ^{:class "chat-message-pane"}
+  [:div.message-table-wrapper
+   [:table.messages-table
+    (into
+     [:tbody]
+     (map
+      (fn [m] [message->list-item m])
+      (:messages current-conversation)))]])
+
+(defn message-input
+  [conversatation]
+  [:div {:class "message-input"}
+   [:div.text-area-container
+    [:textarea {:on-key-down (actions/handle-message-input-key-stroke (:current-message conversatation))
+                :on-change actions/update-current-message
+                :value (:current-message conversatation)
+                :placeholder "Type your message here"}]]])
 
 (defn render
   []
@@ -73,5 +82,7 @@
        [:div.window-content
         [:div.pane-group
          [chats-sidebar-pane @current-conversation @conversation-list]
-         [chat-message-pane @current-conversation]]]
+         [:div.messages-container.pane
+          [chat-message-pane @current-conversation]
+          [message-input @current-conversation]]]]
        [footer]])))

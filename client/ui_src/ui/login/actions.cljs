@@ -1,10 +1,11 @@
 (ns ui.login.actions
-  (:require [re-frame.core :refer [dispatch]]))
+  (:require [re-frame.core :refer [dispatch]]
+            [ui.util.events :as util]))
 
 (defn set-login-form-prop-for-event
   [e prop]
   (.preventDefault e)
-  (dispatch [:login-form/change prop (.-value (.-target e))])
+  (dispatch [:login-form/change prop (util/event->value e)])
   nil)
 
 (defn set-username
