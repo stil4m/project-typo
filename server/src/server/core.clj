@@ -6,13 +6,33 @@
             [manifold.stream :as s]
             [manifold.deferred :as d]
             [manifold.bus :as bus]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [cognitect.transit :as transit])
+  (:import [java.io ByteArrayInputStream ByteArrayOutputStream]))
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
+(defn decode-message [msg]
+  (let [in (ByteArrayInputStream. (.getBytes msg) )
+        reader (transit/reader in :json)]
+    (transit/read reader)))
 
+(defn encode-message [msg]
+  (let [out (ByteArrayOutputStream. 4096)
+        writer (transit/writer out :json)]
+    (transit/write writer msg)
+    (.toString out)))
+
+(defmulti action (fn [conn chatrooms m] (:action m)))
+
+(defmethod action :create-room [conn chatrooms m]
+  (log/info "HERE")
+  (s/connect
+   (bus/subscribe chatrooms (:room m))
+   conn)
+  (log/info "created room" m))
+
+(defmethod action :message [_ chatrooms {:keys [room body] :as msg}]
+  (log/info "got message" msg)
+  (bus/publish! chatrooms room (encode-message msg)))
 
 (def non-websocket-request
   {:status 400
@@ -30,17 +50,11 @@
                 ;; if it wasn't a valid websocket handshake, return an error
                 non-websocket-request
                 ;; otherwise, take the first two messages, which give us the chatroom and name
-                (d/let-flow [room (s/take! conn)
-                             name (s/take! conn)]
-                            ;; take all messages from the chatroom, and feed them to the client
-                            (s/connect
-                             (bus/subscribe chatrooms room)
-                             conn)
-                            ;; take all messages from the client, prepend the name, and publish it to the room
+                (d/let-flow [room (s/take! conn)]
+                            (action conn chatrooms (decode-message room))
                             (s/consume
-                             #(bus/publish! chatrooms room %)
+                             #(action conn chatrooms (decode-message %))
                              (->> conn
-                                  (s/map #(str name ": " %))
                                   (s/buffer 100)))))))
 
 (defn start-server []
@@ -51,5 +65,6 @@
 (defn stop-server [server]
   (.close server))
 
-(bus/publish! chatrooms "main" "hoi!")
-
+;(when server (.close server))
+                                        ;
+(def server (start-server))
