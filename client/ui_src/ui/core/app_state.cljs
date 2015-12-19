@@ -1,7 +1,7 @@
 (ns ui.core.app-state)
 
 (def default-app-state
-  {:connection {:address "ws://10.31.1.21:5333"
+  {:connection {:address "ws://localhost:5333"
                 :ws nil}
    :route {:history []
            :active nil
