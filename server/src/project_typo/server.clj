@@ -12,7 +12,7 @@
   (:import [java.io ByteArrayInputStream ByteArrayOutputStream]))
 
 (defn decode-message [msg]
-  (let [in (ByteArrayInputStream. (.getBytes msg) )
+  (let [in (ByteArrayInputStream. (.getBytes msg))
         reader (transit/reader in :json)]
     (transit/read reader)))
 
@@ -35,10 +35,7 @@
   (bus/publish! chatrooms room (encode-message msg)))
 
 (defmethod action :join-room [_ chatrooms m]
-  (log/info "joining room" m))
-
-(defmethod action :join-room [_ chatrooms m]
-  (log/info "joining room" m))
+  (log/info "joined room" m))
 
 (def non-websocket-request
   {:status 400
@@ -76,6 +73,3 @@
 
 (defn create-server [port]
   (map->Server {:port port}))
-
-
-

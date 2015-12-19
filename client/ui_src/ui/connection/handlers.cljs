@@ -4,7 +4,6 @@
             [re-frame.core :refer [register-handler trim-v]]
             [adzerk.cljs-console :as log :include-macros true]))
 
-
 :connection/update-address
 
 (defn write [websocket message]

@@ -6,4 +6,3 @@
   :initialize-db
   (fn [_]
     (js->clj app-state/default-app-state)))
-
