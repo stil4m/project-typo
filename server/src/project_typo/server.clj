@@ -34,7 +34,7 @@
     (s/put! conn (encode-message {:event :channel-created
                                   :created-channel res}))))
 
-(defmethod action :join-channel join-channel [{:keys [conn]}
+(defmethod action :join-channel join-channel [{:keys [subscriptions conn]}
                                  {:keys [event-bus channel-service]}
                                  {:keys [channel]}]
   (s/connect
@@ -56,7 +56,10 @@
                             {:keys [event-bus]}
                             {:keys [channel body] :as msg}]
   (log/info "got message" msg)
-  (bus/publish! event-bus channel (encode-message msg)))
+  (bus/publish! event-bus channel (assoc
+                                   (encode-message msg)
+                                   :event
+                                   :new-message)))
 
 (defmethod action :default [_ _ msg]
   (log/warn "Unhandled action" msg))
@@ -68,16 +71,15 @@
 
 (defn start-connection [component conn]
   (d/let-flow [channel (s/take! conn)
-               uuid (java.util.UUID/randomUUID)
                connections (:connections component)
-               context {:uuid uuid :conn conn}]
+               context {:conn conn :subscriptions (atom {})}]
 
               ;; Add to local state
-              (swap! connections assoc uuid context)
+              (swap! connections assoc conn context)
 
               ;; Register to on closed callback
               (s/on-closed conn
-                           (fn [] (swap! connections dissoc uuid)))
+                           (fn [] (swap! connections dissoc conn)))
 
               ;; Handle initial message
               (action context component (decode-message channel))
