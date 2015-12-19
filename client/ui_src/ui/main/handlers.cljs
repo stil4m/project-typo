@@ -4,7 +4,8 @@
                                    path
                                    after
                                    trim-v]]
-            [adzerk.cljs-console :as log :include-macros true]))
+            [adzerk.cljs-console :as log :include-macros true]
+            [ui.main.transitions :as transitions]))
 
 
 (defn send-message-for-current-room
@@ -28,30 +29,17 @@
   (log/info "TODO | Leave ROOM:")
   (log/info "TODO | - room ~{(:id room)}"))
 
-(defn set-as-current-room-and-add-to-open
-  [db room]
-  (let [db-with-current (assoc db :current-room (:id room))]
-    (if (contains? (set (:open-rooms db-with-current)) (:id room))
-      db-with-current
-      (assoc db-with-current :open-rooms (conj (:open-rooms db-with-current) (:id room))))))
 
 (register-handler
  :set-active-room
  [trim-v]
- (fn [db [room]]
-   (set-as-current-room-and-add-to-open db room)))
+ transitions/set-as-current-room-and-add-to-open)
 
 (register-handler
  :send-current-message
  [trim-v
   (after send-message-for-current-room)]
- (fn [db [message-body]]
-   (-> (update-in db [:rooms (:current-room db)] dissoc :current-message)
-       (update-in [:rooms (:current-room db) :messages] conj {:sending true
-                                                              :user (get-in db [:user :username])
-                                                              :body message-body})
-       (update-in [:message-queue] conj {:room (:current-room db)
-                                         :body message-body}))))
+ transitions/add-current-message-to-queue)
 
 (register-handler
  :update-current-message
@@ -69,14 +57,10 @@
 (register-handler
  :joined-room
  [trim-v]
- (fn [db [room]]
-   (set-as-current-room-and-add-to-open db room)))
+ transitions/set-as-current-room-and-add-to-open)
 
 (register-handler
  :leave-room
  [trim-v
   (after perform-room-leave)]
- (fn [db [room]]
-   (assoc db :current-room (when (not= (:id room) (:current-room db))
-                             (:current-room db))
-             :open-rooms (filter #(not= % (:id room)) (:open-rooms db)))))
+ transitions/leave-room)
