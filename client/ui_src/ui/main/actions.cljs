@@ -2,24 +2,24 @@
   (:require [re-frame.core :refer [dispatch]]
             [ui.util.events :as util]))
 
-(defn leave-room
-  [room]
+(defn leave-channel
+  [channel]
   (fn [e]
     (.preventDefault e)
     (.stopPropagation e)
-    (dispatch [:leave-room room])))
+    (dispatch [:leave-channel channel])))
 
-(defn join-room
-  [room]
+(defn join-channel
+  [channel]
   (fn [e]
     (.preventDefault e)
-    (dispatch [:join-room room])))
+    (dispatch [:join-channel channel])))
 
-(defn select-room
-  [room]
+(defn select-channel
+  [channel]
   (fn [e]
     (.preventDefault e)
-    (dispatch [:set-active-room room])))
+    (dispatch [:set-active-channel channel])))
 
 (defn handle-message-input-key-stroke
   [message]

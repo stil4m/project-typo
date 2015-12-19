@@ -17,9 +17,9 @@
 
 (defmulti event (fn [message] (:event message)))
 
-(defmethod event :room-created [message]
-  (log/info "Created room ~{message}")
-  (dispatch [:created-room (:created-room message)]))
+(defmethod event :channel-created [message]
+  (log/info "Created channel ~{message}")
+  (dispatch [:created-channel (:created-channel message)]))
 
 (defmethod event :default [message]
   (log/warn "Unhandled event ~{message}"))
@@ -38,12 +38,12 @@
 
      (set! (.-onopen websocket)
            (fn [e]
-             (write websocket {:action :create-room :room "My room"})
-             (write websocket {:action :message :room "My room" :body "main"})))
+             (write websocket {:action :create-channel :channel "My channel"})
+             (write websocket {:action :message :channel "My channel" :body "main"})))
      (assoc-in db [:connection :ws] websocket))))
 
-(defn ^:export send-message [room message]
-  (write (:ws (:connection @re-frame.db/app-db)) {:action :message :room room :body message}))
+(defn ^:export send-message [channel message]
+  (write (:ws (:connection @re-frame.db/app-db)) {:action :message :channel channel :body message}))
 
 (register-handler
  :connection/update-address

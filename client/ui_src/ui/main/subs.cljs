@@ -4,25 +4,25 @@
 
 
 (register-sub
- :room-list
+ :channel-list
  (fn [db]
-   (reaction (vals (get-in @db [:rooms])))))
+   (reaction (vals (get-in @db [:channels])))))
 
 (register-sub
- :open-rooms
+ :open-channels
  (fn [db]
-   (reaction (:open-rooms @db))))
+   (reaction (:open-channels @db))))
 
 (register-sub
  :channels-state
  (fn [db]
-   (let [room-list (subscribe [:room-list])
-         open-rooms (subscribe [:open-rooms])]
-     (reaction {:rooms (map #(get-in @db [:rooms %]) @open-rooms)
+   (let [channel-list (subscribe [:channel-list])
+         open-channels (subscribe [:open-channels])]
+     (reaction {:channels (map #(get-in @db [:channels %]) @open-channels)
                 :people ()}))))
 
 (register-sub
- :current-room
+ :current-channel
  (fn [db]
-   (reaction (when (:current-room @db)
-               (get-in @db [:rooms (:current-room @db)])))))
+   (reaction (when (:current-channel @db)
+               (get-in @db [:channels (:current-channel @db)])))))
