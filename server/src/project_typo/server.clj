@@ -1,4 +1,4 @@
-(ns server.core
+(ns project-typo.server
   (:require [aleph.http :as http]
             [manifold.stream :as stream]
             [clojure.tools.logging :as log]
@@ -7,7 +7,8 @@
             [manifold.deferred :as d]
             [manifold.bus :as bus]
             [environ.core :refer [env]]
-            [cognitect.transit :as transit])
+            [cognitect.transit :as transit]
+            [com.stuartsierra.component :as component])
   (:import [java.io ByteArrayInputStream ByteArrayOutputStream]))
 
 (defn decode-message [msg]
@@ -24,7 +25,6 @@
 (defmulti action (fn [conn chatrooms m] (:action m)))
 
 (defmethod action :create-room [conn chatrooms m]
-  (log/info "HERE")
   (s/connect
    (bus/subscribe chatrooms (:room m))
    conn)
@@ -57,14 +57,19 @@
                              (->> conn
                                   (s/buffer 100)))))))
 
-(defn start-server []
-  (let [port (Integer. (get env :port 5333))]
-    (log/info "Started server on port" port)
-    (http/start-server chat-handler {:port port})))
+(defrecord Server [port server]
+  component/Lifecycle
+  (start [component]
+    (log/info "Starting server on port " port)
+    {:server (http/start-server chat-handler {:port port})})
+  (stop [component]
+    (log/info "Stopping server..")
+    (when server
+      (.close server))
+    (dissoc component :server)))
 
-(defn stop-server [server]
-  (.close server))
+(defn create-server [port]
+  (map->Server {:port port}))
 
-;(when server (.close server))
-                                        ;
-(def server (start-server))
+
+

@@ -9,5 +9,9 @@
                  [aleph "0.4.1-beta3"]
                  [clj-time "0.11.0"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [environ "1.0.1"]]
-  :plugins [[lein-environ "1.0.1"]])
+                 [environ "1.0.1"]
+                 [com.stuartsierra/component "0.3.1"]
+                 [reloaded.repl "0.2.1"]]
+  :plugins [[lein-environ "1.0.1"]]
+  :profiles {:dev {:repl-options {:init-ns user}
+                   :source-paths ["dev"]}})
