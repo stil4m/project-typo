@@ -40,6 +40,17 @@
     [:span.name.px1.light-blue.flex-center "Maarten Arts"]
     [:span.options.light-blue.flex-center [:i.material-icons.grey "keyboard_arrow_down"]]]])
 
+(defn message-box
+  [channel]
+  [:div.border-top.border-color-silver
+   [:div.mr3.ml3.mt2.mb2.flex.flex-row
+    [:input.flex-auto.border.border-color-silver.rounded
+     {:type :text
+      :on-key-down (actions/handle-message-input-key-stroke (:current-message channel))
+      :on-change actions/update-current-message
+      :value (:current-message channel)
+      :placeholder "Type your message here"}]]])
+
 (defn message-panel
   [current-channel]
   [:div.content.flex-auto.flex.flex-column.bg-white
@@ -47,8 +58,10 @@
     [:h1.h2.regular.flex-auto.dark-gray.m0.ml3 (:name current-channel)]
     [:div.flex-none.mr2.flex.flex-column
      [:i.material-icons.dark-gray.flex-center.flex-none "search"]]]
-   [messages/message-list (:messages current-channel)]
-   [messages/message-box]])
+   [messages/message-list (concat (:messages current-channel)
+                                (:queue current-channel))]
+   [message-box current-channel]])
+
 (defn render
   []
   (let [route (subscribe [:route-state])

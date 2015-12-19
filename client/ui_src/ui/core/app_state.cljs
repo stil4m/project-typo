@@ -1,7 +1,23 @@
-(ns ui.core.app-state)
+(ns ui.core.app-state
+  (:require [cljs-uuid-utils.core :as uuid]))
+
+(def channel-1-id (uuid/make-random-uuid))
+(def channel-2-id (uuid/make-random-uuid))
+(def channel-3-id (uuid/make-random-uuid))
+
+(defn to-actual-messages
+  [start list]
+  (vec (map-indexed
+        (fn [n {:keys [user body]}]
+          {:client-id (uuid/make-random-uuid)
+           :server-id (uuid/make-random-uuid)
+           :user user
+           :body body
+           :time (+ start (* n 20000))})
+        list)))
 
 (def default-app-state
-  {:connection {:address "ws://localhost:5333"
+  {:connection {:address "ws://10.31.1.21:5333"
                 :ws nil}
    :route {:history []
            :active nil
@@ -18,111 +34,86 @@
             {:id "tomtheun" :full-name "Mitchel Kuijpers" :status :busy}
             {:id "maaarts" :full-name "Maarten Arts" :status :online}
             {:id "guest1234" :full-name "Philip Geubels" :status :online}]
-   :current-channel "channel3"
-   :open-channels ["channel1"
-                   "channel3"]
-   :message-queue []
-   :channels {"channel1" {:id "channel1"
-                          :name "Just Jokes"
-                          :description "Wait whut?!"
-                          :private false
-                          :unread 3
-                          :people ["matstijl"
-                                   "tomtheun"
-                                   "maaarts"
-                                   "guest1234"]
-                          :messages [{:id 11
-                                      :user "guest1234"
-                                      :time 1450041030000
-                                      :body "Weet je hoe ze een stalker noemen met ski-stokken?"}
-                                     {:id 12
-                                      :user "mitkuijp"
-                                      :time 1450041040000
-                                      :body "Wat dan flip?"}
-                                     {:id 13
-                                      :user "guest1234"
-                                      :time 1450041050000
-                                      :body "Een Nordic Stalker."}
-                                     {:id 14
-                                      :user "tomtheun"
-                                      :time 1450041060000
-                                      :body "Classic :p"}]}
-               "channel2" {:id "channel2"
-                           :name "TPL"
-                           :description "TPL people channel. Own people first"
-                           :private true
-                           :people ["matstijl"
-                                    "tomtheun"
-                                    "maaarts"]
-                           :messages [{:id 21
-                                       :user "matstijl"
-                                       :time 1450041030000
-                                       :body "Anyone there!?"}]}
-               "channel3" {:id "channel3"
-                           :name "Christmas Hackton"
-                           :description nil
-                           :private true
-                           :people ["matstijl"
-                                    "mitkuijp"
-                                    "tomtheun"
-                                    "maaarts"]
-                           :messages [{:id 31
-                                       :user "tomtheun"
-                                       :body "Hi"
-                                       :time 1450041030000}
-                                      {:id 32
-                                       :user "mitkuijp"
-                                       :body "Morning, had a good sleep?"
-                                       :time 1450041040000}
-                                      {:id 33
-                                       :user "tomtheun"
-                                       :body "Do you know where @stil4m is?"
-                                       :time 1450041050000}
-                                      {:id 34
-                                       :user "stil4m"
-                                       :body "Here I am"
-                                       :time 1450041060000}
-                                      {:id 35
-                                       :user "stil4m"
-                                       :body "Sorry I am late"
-                                       :time 1450041070000}
-                                      {:id 36
-                                       :user "mitkuijp"
-                                       :body "Always the same song :p"
-                                       :time 1450041080000}
-                                      {:id 37
-                                       :user "tomtheun"
-                                       :body "Ok guys, lets get to it. The plan for today is to build an awesome chat client. I hope you have brought your pyjamas, because it is going to be a long weekend."
-                                       :time 1450041090000}
-                                      {:id 38
-                                       :user "stil4m"
-                                       :body "Got them with me"
-                                       :time 1450041100000}
-                                      {:id 39
-                                       :user "mitkuijp"
-                                       :body "Yes"
-                                       :time 1450041110000}
-                                      {:id 310
-                                       :user "tomtheun"
-                                       :body "Who wants (beer)?"
-                                       :time 1450041120000}
-                                      {:id 311
-                                       :user "stil4m"
-                                       :body "(areyoukiddingme)"
-                                       :time 1450041130000}
-                                      {:id 312
-                                       :user "mitkuijp"
-                                       :body "Yep"
-                                       :time 1450041140000}
-                                      {:id 313
-                                       :user "mitkujp"
-                                       :body "s/Yep/Yes"
-                                       :time 1450041150000}
-                                      {:id 314
-                                       :user "stil4m"
-                                       :body "Ok, I'll will also have one, but only one."
-                                       :time 1450041160000}
-                                      {:id 315
-                                       :user "tomtheun"
-                                       :body "3 beers coming up"
-                                       :time 1450041170000}]}}})
+   :current-channel channel-3-id
+   :open-channels [channel-1-id
+                   channel-2-id
+                   channel-3-id]
+   :channels (assoc {}
+               channel-1-id {:id channel-1-id
+                             :name "Just Jokes"
+                             :description "Wait whut?!"
+                             :private false
+                             :unread 3
+                             :people ["matstijl"
+                                      "tomtheun"
+                                      "maaarts"
+                                      "guest1234"]
+                             :queue []
+                             :messages (to-actual-messages
+                                        1450041030000
+                                        [{:user "guest1234"
+                                          :body "Weet je hoe ze een stalker noemen met ski-stokken?"}
+                                         {:user "mitkuijp"
+                                          :body "Wat dan flip?"}
+                                         {:user "guest1234"
+                                          :body "Een Nordic Stalker."}
+                                         {:user "tomtheun"
+                                          :body "Classic :p"}])}
+               channel-2-id {:id channel-2-id
+                             :name "TPL"
+                             :description "TPL people channel. Own people first"
+                             :private true
+                             :people ["matstijl"
+                                      "tomtheun"
+                                      "maaarts"]
+                             :messages (to-actual-messages
+                                        1450041030000
+                                        [{:user "matstijl"
+                                          :body "Anyone there!?"}])
+                             :queue [{:client-id (uuid/make-random-uuid)
+                                      :server-id (uuid/make-random-uuid)
+                                      :user "matstijl"
+                                      :time nil
+                                      :body "I guess this message takes a long time to send..."}]}
+               channel-3-id {:id channel-3-id
+                             :name "Christmas Hackton"
+                             :description nil
+                             :private true
+                             :people ["matstijl"
+                                      "mitkuijp"
+                                      "tomtheun"
+                                      "maaarts"]
+                             :queue []
+                             :messages (to-actual-messages
+                                        1450041030000
+                                        [{:user "tomtheun"
+                                          :body "Hi"}
+                                         {:user "mitkuijp"
+                                          :body "Morning, had a good sleep?"}
+                                         {:user "tomtheun"
+                                          :body "Do you know where @stil4m is?"}
+                                         {:user "stil4m"
+                                          :body "Here I am"}
+                                         {:user "stil4m"
+                                          :body "Sorry I am late"}
+                                         {:user "mitkuijp"
+                                          :body "Always the same song :p"}
+                                         {:user "tomtheun"
+                                          :body "Ok guys, lets get to it. The plan for today is to build an awesome chat client. I hope you have brought your pyjamas, because it is going to be a long weekend."}
+                                         {:user "stil4m"
+                                          :body "Got them with me"}
+                                         {:user "mitkuijp"
+                                          :body "Yes"}
+                                         {:user "tomtheun"
+                                          :body "Who wants (beer)?"}
+                                         {:user "stil4m"
+                                          :body "(areyoukiddingme)"}
+                                         {:user "mitkuijp"
+                                          :body "Yep"}
+                                         {:user "mitkujp"
+                                          :body "s/Yep/Yes"}
+                                         {:user "stil4m"
+                                          :body "Ok, I'll will also have one, but only one."}
+                                         {:user "tomtheun"
+                                          :body "3 beers coming up"}])})})
+

@@ -1,5 +1,5 @@
 (ns ui.main.actions
-  (:require [re-frame.core :refer [dispatch]]
+  (:require [re-frame.core :refer [dispatch dispatch-sync]]
             [ui.util.events :as util]))
 
 (defn leave-channel
@@ -35,4 +35,4 @@
 (defn update-current-message
   [e]
   (.preventDefault e)
-  (dispatch [:update-current-message (util/event->value e)]))
+  (dispatch-sync [:update-current-message (util/event->value e)]))

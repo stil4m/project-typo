@@ -13,9 +13,14 @@
   (contains? (set (:open-channels db)) (:id channel)))
 
 (defn send-message-for-current-channel
-  [db [message]]
-  (let [channel (get-in db [:channels (:current-channel db)])]
-    (write (get-in db [:connection :ws]) {:action :message :channel (:id channel) :body message})))
+  [db []]
+  (let [channel (get-in db [:channels (:current-channel db)])
+        message (last (:queue channel))]
+    (try
+      (write (get-in db [:connection :ws]) (merge (select-keys message [:client-id :body])
+                                                  {:action :message :channel (:id channel)}))
+      (catch js/Object e
+        (.log js/console (str "e " (js->clj e)))))))
 
 (defn perform-channel-join
   [db [channel]]
@@ -47,11 +52,11 @@
    (update-in db [:channels (:current-channel db)] assoc :current-message message)))
 
 (register-handler
-  :created-channel
-  [trim-v
-    (after (fn [db [message]] (dispatch [:join-channel message])))]
-  (fn [db [message]]
-    (update db :channels assoc (:id message) message)))
+ :created-channel
+ [trim-v
+  (after (fn [db [message]] (dispatch [:join-channel message])))]
+ (fn [db [message]]
+   (update db :channels assoc (:id message) message)))
 
 (register-handler
  :join-channel

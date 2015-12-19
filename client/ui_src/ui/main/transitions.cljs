@@ -1,10 +1,11 @@
-(ns ui.main.transitions)
+(ns ui.main.transitions
+  (:require [cljs-uuid-utils.core :as uuid]))
 
 
 (defn leave-channel
   [db [channel]]
   (assoc db :current-channel (when (not= (:id channel) (:current-channel db))
-                            (:current-channel db))
+                               (:current-channel db))
             :open-channels (vec (filter #(not= % (:id channel)) (:open-channels db)))))
 
 (defn set-as-current-channel-and-add-to-open
@@ -16,9 +17,10 @@
 
 (defn add-current-message-to-queue
   [db [message-body]]
-  (-> (update-in db [:channels (:current-channel db)] dissoc :current-message)
-      (update-in [:channels (:current-channel db) :messages] conj {:sending true
-                                                             :user (get-in db [:user :username])
-                                                             :body message-body})
-      (update-in [:message-queue] conj {:channel (:current-channel db)
-                                        :body message-body})))
+  (update-in db
+             [:channels (:current-channel db)]
+             (fn [channel]
+               (-> (dissoc channel :current-message)
+                   (update :queue conj {:client-id (uuid/make-random-uuid)
+                                        :user (get-in db [:user :username])
+                                        :body message-body})))))
