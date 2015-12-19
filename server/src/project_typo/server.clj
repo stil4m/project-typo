@@ -56,10 +56,11 @@
                             {:keys [event-bus]}
                             {:keys [channel body] :as msg}]
   (log/info "got message" msg)
-  (bus/publish! event-bus channel (assoc
-                                   (encode-message msg)
-                                   :event
-                                   :new-message)))
+  (bus/publish! event-bus channel (encode-message
+                                   (assoc
+                                    msg
+                                    :event
+                                    :new-message))))
 
 (defmethod action :default [_ _ msg]
   (log/warn "Unhandled action" msg))
