@@ -4,14 +4,15 @@
             [ui.components.messages :as messages]))
 
 (defn channel-list
-  [title items]
+  [title  current-channel items]
   (into
    [:ul.mb3.px1 {:style {:list-style :none}}
     [:li [:h1.h6.px1.caps.light-blue.muted title]]]
    (doall (map
            (fn [item]
              [:li.lh2.h5.flex.px1.rounded.px1.mb05 {:key (:id item)
-                                                    :class (when (:active item) "bg-dark-overlay")
+                                                    :class (when (= (:id item) (:id current-channel))
+                                                             "bg-dark-overlay")
                                                     :on-click (actions/select-channel item)}
               [:span.status [:i.material-icons
                              {:class (if (pos? (:unread item))
@@ -23,12 +24,14 @@
            items))))
 
 (defn contacts-side-bar
-  [channels-state]
+  [current-channel channels-state]
   [:nav.flex.flex-none.flex-column.contacts-sidebar.bg-dark-blue
    [:div.flex-auto.mt6
     [channel-list "Channels"
+     current-channel
      (:channels channels-state)]
     [channel-list "People"
+     current-channel
      (:people channels-state)]]
    [:div.user-menu.h4.lh4.px2.flex
     [:span [:i.material-icons.flex-center {:class "green"} "lens"]]
@@ -51,6 +54,6 @@
         channels-state (subscribe [:channels-state])]
     (fn []
       [:div.window.flex.flex-row
-       [contacts-side-bar @channels-state]
+       [contacts-side-bar @current-channel @channels-state]
        [message-panel @current-channel]
        [:aside.flex.flex-none.operations-sidebar.bg-light-gray.border-left.border-color-silver]])))
