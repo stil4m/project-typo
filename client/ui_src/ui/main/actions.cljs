@@ -2,6 +2,12 @@
   (:require [re-frame.core :refer [dispatch]]
             [ui.util.events :as util]))
 
+(defn join-room
+  [room]
+  (fn [e]
+    (.preventDefault e)
+    (dispatch [:join-room room])))
+
 (defn select-room
   [room]
   (fn [e]

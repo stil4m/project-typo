@@ -18,13 +18,26 @@
     (log/info "TODO | - room: ~{(:id room)}")
     (log/info "TODO | - message: ~{message}")))
 
+(defn perform-room-join
+  [db [room-info]]
+  (if (contains? (:open-rooms db) (:id (:joining-room db)))
+    (dispatch [:joined-room room-info])
+    (do
+      (log/info "TODO | Join ROOM:")
+      (log/info "TODO | - room ~{(:id room-info)}")
+      (dispatch [:joined-room room-info]))))
+
+(defn set-as-current-room-and-add-to-open
+  [db room]
+  (-> (assoc db :current-room (:id room))
+      (assoc :open-rooms (conj (:open-rooms db) (:id room)))))
+
 (register-handler
  :set-active-room
  [trim-v
   (after listen-for-new-room)]
- (fn [db [converstation]]
-   (-> (assoc db :current-room (:id converstation))
-       (assoc :open-rooms (conj (:open-rooms db) (:id converstation))))))
+ (fn [db [room]]
+   (set-as-current-room-and-add-to-open db room)))
 
 (register-handler
  :send-current-message
@@ -43,3 +56,16 @@
  [trim-v]
  (fn [db [message]]
    (update-in db [:rooms (:current-room db)] assoc :current-message message)))
+
+(register-handler
+ :join-room
+ [trim-v
+  (after perform-room-join)]
+ (fn [db [room-info]]
+   (assoc db :joining-room room-info)))
+
+(register-handler
+ :joined-room
+ [trim-v]
+ (fn [db [room]]
+   (set-as-current-room-and-add-to-open db room)))
