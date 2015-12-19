@@ -17,13 +17,20 @@
       first
       :new_val))
 
-(r/now)
+(defn- most-recent-messages [{:keys [db]} channel amount]
+  (-> (r/table constants/messages-table)
+      (r/order-by "time")
+      (r/limit amount)
+      (r/run (db/connect db))))
 
 (defprotocol IMessageService
+  (most-recent [this channel amount])
   (create [this m]))
 
 (defrecord MessageService [db]
   IMessageService
+  (most-recent [this channel amount]
+    (most-recent-messages this channel amount))
   (create [this message]
     (create-message this message)))
 

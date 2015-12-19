@@ -52,11 +52,15 @@
                                   :created-channel res}))))
 
 (defmethod action :join-channel join-channel [{:keys [subscriptions conn]}
-                                 {:keys [event-bus channel-service]}
+                                 {:keys [event-bus message-service]}
                                  {:keys [channel]}]
   (s/connect
    (bus/subscribe event-bus channel)
-   conn))
+   conn)
+  (bus/publish! event-bus channel (encode-message
+                                   {:most-recent-messages (messages/most-recent message-service channel 100)
+                                    :channel channel
+                                    :event :joined-channel})))
 
 (defmethod action :leave-channel leave-channel [{:keys [conn]}
                                   {:keys [event-bus channel-service]}
