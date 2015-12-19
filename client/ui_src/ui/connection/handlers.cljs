@@ -37,11 +37,11 @@
 
      (set! (.-onclose websocket)
            (fn [e]
-             (.log js/console "Disconnected from server")))
+             (log/info "Disconnected from server")))
 
      (set! (.-onopen websocket)
            (fn [e]
-             (write websocket {:action :create-channel :name "My room"})))
+             (log/info "Connected to server")))
 
      (assoc-in db [:connection :ws] websocket))))
 

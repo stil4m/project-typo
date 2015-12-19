@@ -22,6 +22,10 @@
       (catch js/Object e
         (.log js/console (str "e " (js->clj e)))))))
 
+(defn perform-channel-create
+  [db [channel]]
+  (write (get-in db [:connection :ws]) (merge {:action :create-channel } (select-keys channel [:name]))))
+
 (defn perform-channel-join
   [db [channel]]
   (if (has-channel-open? db channel)
@@ -52,11 +56,18 @@
    (update-in db [:channels (:current-channel db)] assoc :current-message message)))
 
 (register-handler
- :created-channel
- [trim-v
-  (after (fn [db [message]] (dispatch [:join-channel message])))]
- (fn [db [message]]
-   (update db :channels assoc (:id message) message)))
+  :create-channel
+  [trim-v
+    (after perform-channel-create)]
+  (fn [db [channel]]
+    (assoc db :creating-channel (:name channel))))
+
+(register-handler
+  :created-channel
+  [trim-v
+    (after (fn [db [message]] (dispatch [:join-channel message])))]
+  (fn [db [message]]
+    (update db :channels assoc (:id message) message)))
 
 (register-handler
  :join-channel
