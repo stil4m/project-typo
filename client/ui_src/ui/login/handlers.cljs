@@ -4,6 +4,7 @@
                                    path
                                    after
                                    trim-v]]
+            [ui.typo-re-frame :refer [default-middleware]]
             [ui.util.routing :as routing]
             [ui.core.routes :as routes]
             [ui.connection.handlers :refer [write]]))
@@ -66,6 +67,6 @@
 
 (register-handler
   :login-form/change
-  [trim-v (path [:login-form :data])]
+  [default-middleware (path [:login-form :data])]
   (fn [db [k v]]
     (assoc db k v)))

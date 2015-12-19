@@ -44,8 +44,6 @@
  :connect-to-server
  (fn [db]
    (let [websocket (new js/WebSocket (get-in db [:connection :address]))]
-     (.log js/console "I GOT A WEBSOCKET")
-     (.log js/console (str db))
      (set! (.-onmessage websocket)
            (fn [e]
              (event (read (.-data e)))))

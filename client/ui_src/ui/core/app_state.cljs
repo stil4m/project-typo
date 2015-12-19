@@ -6,11 +6,11 @@
    :route {:history []
            :active nil
            :future []}
-   :authenticating false
    :user {:username "stil4m"
           :full-name "Mats Stijlaart"
-          :description ""}
-   :login-form {:loading false
+          :status :online}
+   :login-form {:authenticating false
+                :loading false
                 :error nil
                 :data {:username "matstijl"
                        :full-name "Mats Stijlaart"}}

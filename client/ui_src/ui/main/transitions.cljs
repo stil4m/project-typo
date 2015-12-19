@@ -1,6 +1,8 @@
 (ns ui.main.transitions
   (:require [cljs-uuid-utils.core :as uuid]
-            [adzerk.cljs-console :as log :include-macros true]))
+            [adzerk.cljs-console :as log :include-macros true]
+            [schema.core :as s]
+            [ui.core.schema :as schema]))
 
 (defn leave-channel
   [db [channel]]
@@ -22,7 +24,6 @@
              (fn [channel]
                (-> (dissoc channel :current-message)
                    (update :queue conj {:client-id (str (uuid/make-random-uuid))
-                                        :user (get-in db [:user :username])
                                         :body message-body})))))
 
 ;; Handle received message
