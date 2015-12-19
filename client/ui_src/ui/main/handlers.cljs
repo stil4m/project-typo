@@ -70,6 +70,11 @@
     (update db :channels assoc (:id message) (assoc message :queue []))))
 
 (register-handler
+  :all-channels
+  [trim-v]
+  transitions/update-channels)
+
+(register-handler
  :join-channel
  [trim-v
   (after perform-channel-join)]

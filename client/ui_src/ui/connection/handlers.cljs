@@ -25,6 +25,9 @@
   (log/info "Received message ~{message}")
   (dispatch [:received-message message]))
 
+(defmethod event :all-channels [message]
+  (dispatch [:all-channels (:channels message)]))
+
 (defmethod event :heartbeat [message]
   (log/debug "Heartbeat..."))
 
@@ -45,7 +48,8 @@
 
      (set! (.-onopen websocket)
            (fn [e]
-             (log/info "Connected to server")))
+             (log/info "Connected to server")
+             (write websocket {:action :list-channels})))
 
      (assoc-in db [:connection :ws] websocket))))
 

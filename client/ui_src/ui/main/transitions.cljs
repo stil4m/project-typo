@@ -1,7 +1,6 @@
 (ns ui.main.transitions
   (:require [cljs-uuid-utils.core :as uuid]))
 
-
 (defn leave-channel
   [db [channel]]
   (assoc db :current-channel (when (not= (:id channel) (:current-channel db))
@@ -24,7 +23,6 @@
                    (update :queue conj {:client-id (uuid/make-random-uuid)
                                         :user (get-in db [:user :username])
                                         :body message-body})))))
-
 
 ;; Handle received message
 (defn increase-unread-when-not-active
@@ -50,3 +48,10 @@
                (->> (increase-unread-when-not-active db target-channel)
                     (add-message-to-channel-messages)
                     (remove-message-from-channel-queue message)))))
+
+(defn update-channels
+  [db [channels]]
+  (let [channels-by-id (into {} (map #(vector (:id %) %) channels))]
+    (->
+      (assoc db :channels channels-by-id)
+      (assoc :open-channels (keys channels-by-id)))))
