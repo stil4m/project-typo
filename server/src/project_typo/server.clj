@@ -34,6 +34,12 @@
   (log/info "got message" msg)
   (bus/publish! chatrooms room (encode-message msg)))
 
+(defmethod action :join-room [_ chatrooms m]
+  (log/info "joining room" m))
+
+(defmethod action :join-room [_ chatrooms m]
+  (log/info "joining room" m))
+
 (def non-websocket-request
   {:status 400
    :headers {"content-type" "application/text"}
