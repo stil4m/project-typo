@@ -21,6 +21,10 @@
   (log/info "Created channel ~{message}")
   (dispatch [:created-channel (:created-channel message)]))
 
+(defmethod event :new-message [message]
+  (log/info "Received message ~{message}")
+  (dispatch [:received-message message]))
+
 (defmethod event :heartbeat [message]
   (log/debug "Heartbeat..."))
 

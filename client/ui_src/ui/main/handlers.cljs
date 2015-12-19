@@ -67,7 +67,7 @@
   [trim-v
     (after (fn [db [message]] (dispatch [:join-channel message])))]
   (fn [db [message]]
-    (update db :channels assoc (:id message) message)))
+    (update db :channels assoc (:id message) (assoc message :queue []))))
 
 (register-handler
  :join-channel
@@ -86,3 +86,8 @@
  [trim-v
   (after perform-channel-leave)]
  transitions/leave-channel)
+
+(register-handler
+ :received-message
+ [trim-v]
+ transitions/received-message)

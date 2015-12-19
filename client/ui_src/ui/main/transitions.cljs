@@ -24,3 +24,29 @@
                    (update :queue conj {:client-id (uuid/make-random-uuid)
                                         :user (get-in db [:user :username])
                                         :body message-body})))))
+
+
+;; Handle received message
+(defn increase-unread-when-not-active
+  [db channel]
+  (if (= (:current-channel db) (:id channel))
+    channel
+    (update channel :unread inc)))
+
+(defn add-message-to-channel-messages
+  [channel]
+  (update channel :messages conj))
+
+(defn remove-message-from-channel-queue
+  [message channel]
+  (assoc channel :queue (filterv
+                         #(not= (:id %) (:client-id message))
+                         (:queue channel))))
+
+(defn received-message
+  [db [message]]
+  (update-in db [:channels (:channel message)]
+             (fn [target-channel]
+               (->> (increase-unread-when-not-active db target-channel)
+                    (add-message-to-channel-messages)
+                    (remove-message-from-channel-queue message)))))

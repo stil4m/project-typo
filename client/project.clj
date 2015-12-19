@@ -11,6 +11,7 @@
                  [tranchis/figwheel-sidecar "0.5.0-2"]
                  [com.andrewmcveigh/cljs-time "0.3.14"]
                  [com.lucasbradstreet/cljs-uuid-utils "1.0.2"]
+                 [prismatic/schema "1.0.4"]
                  [com.cognitect/transit-cljs "0.8.232"]]
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-2"]
