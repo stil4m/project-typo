@@ -3,6 +3,7 @@
             [environ.core :refer [env]]
             [manifold.bus :as bus]
             [project-typo.channel :as channel]
+            [project-typo.messages :as messages]
             [project-typo.db :as db]
             [project-typo.server :as server]))
 
@@ -10,9 +11,11 @@
   (->
    (component/system-map
     :channel-service (channel/create-channel-service)
+    :message-service (messages/create-message-service)
     :server (server/create-server (:port config 5333))
     :event-bus (bus/event-bus)
     :db (db/create-database (:database config)))
    (component/system-using
-    {:server [:channel-service :event-bus]
+    {:server [:channel-service :event-bus :message-service]
+     :message-service [:db]
      :channel-service [:db]})))
