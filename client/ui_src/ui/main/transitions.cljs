@@ -61,7 +61,4 @@
 
 (defn update-channels
   [db [channels]]
-  (let [channels-by-id (into {} (map #(vector (:id %) (enrich-channel %)) channels))]
-    (->
-     (assoc db :channels channels-by-id)
-     (assoc :open-channels (keys channels-by-id)))))
+  (assoc db :channels (into {} (map #(vector (:id %) (enrich-channel %)) channels))))

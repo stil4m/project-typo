@@ -28,7 +28,6 @@
 
 (defn perform-channel-join
   [db [channel]]
-  (.log js/console (str "abc " (has-channel-open? db channel)))
   (if (has-channel-open? db channel)
     (dispatch [:joined-channel channel])
     (do
