@@ -50,9 +50,18 @@
                     (add-message-to-channel-messages message)
                     (remove-message-from-channel-queue message)))))
 
+(defn enrich-channel
+  [channel]
+  (assoc channel :queue (vec (:queue channel))
+                 :messages (vec (:messages channel))))
+
+(defn add-created-channel
+  [db [created-channel]]
+  (update db :channels assoc (:id created-channel) (enrich-channel created-channel)))
+
 (defn update-channels
   [db [channels]]
-  (let [channels-by-id (into {} (map #(vector (:id %) %) channels))]
+  (let [channels-by-id (into {} (map #(vector (:id %) (enrich-channel %)) channels))]
     (->
-      (assoc db :channels channels-by-id)
-      (assoc :open-channels (keys channels-by-id)))))
+     (assoc db :channels channels-by-id)
+     (assoc :open-channels (keys channels-by-id)))))

@@ -26,7 +26,7 @@
   (dispatch [:received-message message]))
 
 (defmethod event :all-channels [message]
-  (dispatch [:all-channels (:channels message)]))
+  (dispatch [:fetched-all-channels (:channels message)]))
 
 (defmethod event :heartbeat [message]
   (log/debug "Heartbeat..."))

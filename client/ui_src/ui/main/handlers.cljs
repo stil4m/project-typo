@@ -28,6 +28,7 @@
 
 (defn perform-channel-join
   [db [channel]]
+  (.log js/console (str "abc " (has-channel-open? db channel)))
   (if (has-channel-open? db channel)
     (dispatch [:joined-channel channel])
     (do
@@ -66,13 +67,18 @@
  :created-channel
  [trim-v
   (after (fn [db [created-channel]] (dispatch [:join-channel created-channel])))]
- (fn [db [created-channel]]
-   (update db :channels assoc (:id created-channel) (assoc created-channel :queue []
-                                                                           :messages (vec (:messages created-channel))))))
+ transitions/add-created-channel)
+
+(defn join-all-channels
+  [_ [channels]]
+  (doall (map
+          #(dispatch [:join-channel %])
+          channels)))
 
 (register-handler
-  :all-channels
-  [trim-v]
+  :fetched-all-channels
+  [trim-v
+   (after join-all-channels)]
   transitions/update-channels)
 
 (register-handler
