@@ -5,15 +5,14 @@
                                    after
                                    trim-v]]
             [adzerk.cljs-console :as log :include-macros true]
-            [ui.main.transitions :as transitions]))
+            [ui.main.transitions :as transitions]
+            [ui.core.handlers :refer [write]]))
 
 
 (defn send-message-for-current-room
   [db [message]]
-  (let [room (get-in  db [:rooms (:current-room db)])]
-    (log/info "TODO | Send message for room:")
-    (log/info "TODO | - room: ~{(:id room)}")
-    (log/info "TODO | - message: ~{message}")))
+  (let [room (get-in db [:rooms (:current-room db)])]
+    (write (get db :ws) {:action :message :room (:id room) :body message})))
 
 (defn perform-room-join
   [db [room-info]]
