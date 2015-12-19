@@ -2,8 +2,8 @@
   (:require [re-frame.core :refer [register-handler
                                    dispatch
                                    path
-                                   after
-                                   trim-v]]
+                                   after]]
+            [ui.core.typo-re-frame :refer [default-middleware]]
             [ui.util.routing :as routing]
             [ui.core.routes :as routes]
             [ui.connection.handlers :refer [write]]))
@@ -18,54 +18,58 @@
 
 
 (register-handler
+ :fetch-all-channels
+ [default-middleware
+  (after (fn [db] (write (get-in db [:connection :ws]) {:action :list-channels})))]
+ identity)
+
+(register-handler
  :authentication-complete
- [trim-v
-  (after (fn [db] (write (get-in db [:connection :ws]) {:action :list-channels})))
-  (after #(dispatch [:login-success {:token "1234567890ABCDEF"
-                                      :username "stil4m"
-                                      :full-name "Mats Stijlaart"
-                                      :description "Beer Fanatic"}]))]
+ [default-middleware
+  (path [:login-form])
+  (after (fn [login-form] (dispatch [:login-success (assoc (:data login-form) :status :online)])))]
  (fn [db]
    (assoc db :authenticating false)))
 
 (register-handler
  :authentication-failed
- [trim-v]
+ [default-middleware
+  (path [:login-form])]
  (fn [db]
    (assoc db :authenticating false)))
 
 
 (register-handler
-  :login-success
-  [trim-v
-   (path [:user])
-   (after (routing/set-route-fn routes/main))]
-  (fn [_ user]
-    user))
+ :login-success
+ [default-middleware
+  (path [:user])
+  (after (routing/set-route-fn routes/main))]
+ (fn [_ [user]]
+   user))
 
 (register-handler
-  :login-submission-data-valid
-  [trim-v
-   (after #(dispatch [:connect-to-server]))]
-  identity)                                                 ;TODO
+ :login-submission-data-valid
+ [default-middleware
+  (after #(dispatch [:connect-to-server]))]
+ identity)                                                  ;TODO
 
 (register-handler
-  :login-submission-data-invalid
-  (fn [db]
-    ;TODO UNSET LOADING
-    ;TODO Add Error
-    db))
+ :login-submission-data-invalid
+ (fn [db]
+   ;TODO UNSET LOADING
+   ;TODO Add Error
+   db))
 
 (register-handler
-  :login-form/submit
-  [trim-v
-   (path [:login-form])
-   (after validate-login-data-for-submission)]
-  (fn [db]
-    (assoc db :authenticating true)))
+ :login-form/submit
+ [default-middleware
+  (path [:login-form])
+  (after validate-login-data-for-submission)]
+ (fn [db]
+   (assoc db :authenticating true)))
 
 (register-handler
-  :login-form/change
-  [trim-v (path [:login-form :data])]
-  (fn [db [k v]]
-    (assoc db k v)))
+ :login-form/change
+ [default-middleware (path [:login-form :data])]
+ (fn [db [k v]]
+   (assoc db k v)))

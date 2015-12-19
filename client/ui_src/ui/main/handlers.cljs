@@ -2,8 +2,8 @@
   (:require [re-frame.core :refer [register-handler
                                    dispatch
                                    path
-                                   after
-                                   trim-v]]
+                                   after]]
+            [ui.core.typo-re-frame :refer [default-middleware]]
             [adzerk.cljs-console :as log :include-macros true]
             [ui.main.transitions :as transitions]
             [ui.connection.handlers :refer [write]]))
@@ -40,31 +40,30 @@
 
 (register-handler
  :set-active-channel
- [trim-v]
+ [default-middleware]
  transitions/set-as-current-channel-and-add-to-open)
 
 (register-handler
  :send-current-message
- [trim-v
+ [default-middleware
   (after send-message-for-current-channel)]
  transitions/add-current-message-to-queue)
 
 (register-handler
  :update-current-message
- [trim-v]
+ [default-middleware]
  (fn [db [message]]
    (update-in db [:channels (:current-channel db)] assoc :current-message message)))
 
 (register-handler
  :create-channel
- [trim-v
+ [default-middleware
   (after perform-channel-create)]
- (fn [db [channel]]
-   (assoc db :creating-channel (:name channel))))
+ identity)
 
 (register-handler
  :created-channel
- [trim-v
+ [default-middleware
   (after (fn [db [created-channel]] (dispatch [:join-channel created-channel])))]
  transitions/add-created-channel)
 
@@ -76,29 +75,29 @@
 
 (register-handler
   :fetched-all-channels
-  [trim-v
+  [default-middleware
    (after join-all-channels)]
   transitions/update-channels)
 
 (register-handler
  :join-channel
- [trim-v
+ [default-middleware
   (after perform-channel-join)]
  (fn [db [channel-info]]
    (assoc db :joining-channel channel-info)))
 
 (register-handler
  :joined-channel
- [trim-v]
+ [default-middleware]
  transitions/set-as-current-channel-and-add-to-open)
 
 (register-handler
  :leave-channel
- [trim-v
+ [default-middleware
   (after perform-channel-leave)]
  transitions/leave-channel)
 
 (register-handler
  :received-message
- [trim-v]
+ [default-middleware]
  transitions/received-message)
