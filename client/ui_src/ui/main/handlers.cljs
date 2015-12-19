@@ -7,10 +7,6 @@
             [adzerk.cljs-console :as log :include-macros true]))
 
 
-(defn listen-for-new-room
-  [db [room]]
-  (log/info "TODO | Start listen to messages on room: ~{(:id room)}"))
-
 (defn send-message-for-current-room
   [db [message]]
   (let [room (get-in  db [:rooms (:current-room db)])]
@@ -41,8 +37,7 @@
 
 (register-handler
  :set-active-room
- [trim-v
-  (after listen-for-new-room)]
+ [trim-v]
  (fn [db [room]]
    (set-as-current-room-and-add-to-open db room)))
 
