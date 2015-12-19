@@ -4,7 +4,8 @@
 
 (defn render
   []
-  (let [login-form-state (subscribe [:login-form-state])]
+  (let [login-form-state (subscribe [:login-form-state])
+        connection-address (subscribe [:connection-address])]
     (fn []
       [:div.window
        [:div.window-content.login-screen
@@ -19,10 +20,16 @@
                                  :placeholder "Username"}]]
           [:div.form-group
            [:label [:strong "Full Name"]]
-           [:input.form-control {:type :test
+           [:input.form-control {:type :text
                                  :on-change actions/set-full-name
                                  :value (get-in @login-form-state [:data :full-name])
                                  :placeholder "Full Name"}]]
+          [:div.form-group
+           [:label [:strong "Server Address"]]
+           [:input.form-control {:type :text
+                                 :on-change actions/set-connection-address
+                                 :value @connection-address
+                                 :placeholder "Server Address"}]]
           [:div
            [:button.btn.btn-primary.pull-right
             {:type :submit}

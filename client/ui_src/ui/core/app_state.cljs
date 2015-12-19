@@ -1,7 +1,9 @@
 (ns ui.core.app-state)
 
 (def default-app-state
-  {:route {:history []
+  {:connection {:address "ws://10.31.1.21:5333"
+                :ws nil}
+   :route {:history []
            :active nil
            :future []}
    :user {:username "stil4m"

@@ -20,6 +20,9 @@
             [ui.routing.handlers]
             [ui.routing.subs]
 
+   ;Connection
+            [ui.connection.handlers]
+            [ui.connection.subs]
 
             [ui.core.views :as views]
             [ui.core.routes :as routes]))

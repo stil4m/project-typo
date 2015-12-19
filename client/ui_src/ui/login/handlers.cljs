@@ -17,7 +17,8 @@
 
 (defn perform-login
   []
-  ;TODO Implement
+  (re-frame.core/dispatch [:connect-to-server])
+  ;TODO Start loading sequence
   (dispatch [:login-success {:token "1234567890ABCDEF"
                              :username "stil4m"
                              :full-name "Mats Stijlaart"
