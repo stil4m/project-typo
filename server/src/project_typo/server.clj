@@ -26,39 +26,35 @@
 
 (defmulti action (fn [conn component m] (:action m)))
 
-(defmethod action :create-channel [{:keys [conn]}
-                                {:keys [event-bus channel-service]}
-                                {:keys [name]}]
+(defmethod action :create-channel create-channel [{:keys [conn]}
+                                   {:keys [event-bus channel-service]}
+                                   {:keys [name]}]
   (let [res (channel/create channel-service {:name name})]
     (log/info "created channel" res)
     (s/put! conn (encode-message {:event :channel-created
                                   :created-channel res}))))
 
-(defmethod action :join-channel [{:keys [conn]}
-                              {:keys [event-bus channel-service]}
-                              {:keys [channel-id]}]
+(defmethod action :join-channel join-channel [{:keys [conn]}
+                                 {:keys [event-bus channel-service]}
+                                 {:keys [channel]}]
   (s/connect
-   (bus/subscribe event-bus channel-id)
-   (->> conn
-        (s/buffer 100))
-   {:upstream? true
-    :downstream? true}))
+   (bus/subscribe event-bus channel)
+   conn))
 
-(defmethod action :leave-channel [{:keys [conn]}
-                               {:keys [event-bus channel-service]}
-                               {:keys [channel-id]}]
+(defmethod action :leave-channel leave-channel [{:keys [conn]}
+                                  {:keys [event-bus channel-service]}
+                                  {:keys [channel-id]}]
   (bus/downstream event-bus channel-id))
 
-(defmethod action :list-channels [{:keys [conn]}
-                               {:keys [channel-service]}
-                               _]
+(defmethod action :list-channels list-channels [{:keys [conn]}
+                                  {:keys [channel-service]}
+                                  _]
   (s/put! conn (encode-message {:event :all-channels
                                 :channels (channel/list-all channel-service)})))
 
-(defmethod action :message [{:keys [conn]}
+(defmethod action :message message [{:keys [conn]}
                             {:keys [event-bus]}
                             {:keys [channel body] :as msg}]
-
   (log/info "got message" msg)
   (bus/publish! event-bus channel (encode-message msg)))
 
@@ -80,17 +76,16 @@
               (swap! connections assoc uuid context)
 
               ;; Register to on closed callback
-              (s/on-closed conn (fn [] (swap! connections dissoc uuid)))
+              (s/on-closed conn
+                           (fn [] (swap! connections dissoc uuid)))
 
               ;; Handle initial message
               (action context component (decode-message channel))
 
               ;; Start Heartbeat
-              (comment
-                (s/connect
-                 (->> conn
-                      (s/buffer 100))
-                 (s/periodically 10000 #(encode-message {:event :heartbeat}))))
+              (s/connect
+               (s/periodically 10000 #(encode-message {:event :heartbeat}))
+               conn)
 
               ;; Consume messsages from connected client
               (s/consume
