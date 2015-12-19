@@ -50,18 +50,10 @@
 (defmethod action :default [_ _ msg]
   (log/warn "Unhandled action" msg))
 
-(defmethod action :join-room [_ chatrooms m]
-  (log/info "joined room" m))
-
-(defmethod action :leave-room [_ chatrooms m]
-  (log/info "left room" m))
-
 (def non-websocket-request
   {:status 400
    :headers {"content-type" "application/text"}
    :body "Expected a websocket request."})
-
-(defonce chatrooms (bus/event-bus))
 
 (defn chat-handler
   [component req]
