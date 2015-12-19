@@ -61,11 +61,11 @@
   component/Lifecycle
   (start [component]
     (log/info "Starting server on port " port)
-    {:server (http/start-server chat-handler {:port port})})
+    (assoc component :server (http/start-server chat-handler {:port port})))
   (stop [component]
     (log/info "Stopping server..")
-    (when server
-      (.close server))
+    (when (:server component)
+      (.close (:server component)))
     (dissoc component :server)))
 
 (defn create-server [port]
