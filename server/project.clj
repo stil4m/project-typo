@@ -8,10 +8,12 @@
                  [com.apa512/rethinkdb "0.11.0"]
                  [aleph "0.4.1-beta3"]
                  [clj-time "0.11.0"]
-                 [org.clojure/tools.logging "0.3.1"]
+                 [org.clojure/tools.logging "0.3.1" :exclusions [org.clojure/clojure]]
+                 [ch.qos.logback/logback-classic "1.1.3"]
                  [environ "1.0.1"]
                  [com.stuartsierra/component "0.3.1"]
-                 [reloaded.repl "0.2.1"]]
+                 [reloaded.repl "0.2.1"]
+                 [prismatic/schema "1.0.4"]]
   :plugins [[lein-environ "1.0.1"]]
   :profiles {:dev {:repl-options {:init-ns user}
                    :source-paths ["dev"]}})
