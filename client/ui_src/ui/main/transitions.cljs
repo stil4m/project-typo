@@ -5,7 +5,7 @@
   [db [room]]
   (assoc db :current-room (when (not= (:id room) (:current-room db))
                             (:current-room db))
-            :open-rooms (filter #(not= % (:id room)) (:open-rooms db))))
+            :open-rooms (vec (filter #(not= % (:id room)) (:open-rooms db)))))
 
 (defn set-as-current-room-and-add-to-open
   [db [room]]
