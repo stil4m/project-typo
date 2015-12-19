@@ -10,63 +10,63 @@
 
 (defn has-channel-open?
   [db channel]
-  (contains? (set (:open-rooms db)) (:id channel)))
+  (contains? (set (:open-channels db)) (:id channel)))
 
-(defn send-message-for-current-room
+(defn send-message-for-current-channel
   [db [message]]
-  (let [room (get-in db [:rooms (:current-room db)])]
-    (write (get-in db [:connection :ws]) {:action :message :room (:id room) :body message})))
+  (let [channel (get-in db [:channels (:current-channel db)])]
+    (write (get-in db [:connection :ws]) {:action :message :channel (:id channel) :body message})))
 
 (defn perform-channel-join
   [db [channel]]
   (if (has-channel-open? db channel)
-    (dispatch [:joined-room channel])
+    (dispatch [:joined-channel channel])
     (do
-      (write (get-in db [:connection :ws]) {:action :join-room :room (:id channel)})
-      (dispatch [:joined-room channel]))))
+      (write (get-in db [:connection :ws]) {:action :join-channel :channel (:id channel)})
+      (dispatch [:joined-channel channel]))))
 
 (defn perform-channel-leave
-  [db [room]]
-  (write (get-in db [:connection :ws]) {:action :leave-room :room (:id room)}))
+  [db [channel]]
+  (write (get-in db [:connection :ws]) {:action :leave-channel :channel (:id channel)}))
 
 (register-handler
- :set-active-room
+ :set-active-channel
  [trim-v]
- transitions/set-as-current-room-and-add-to-open)
+ transitions/set-as-current-channel-and-add-to-open)
 
 (register-handler
  :send-current-message
  [trim-v
-  (after send-message-for-current-room)]
+  (after send-message-for-current-channel)]
  transitions/add-current-message-to-queue)
 
 (register-handler
  :update-current-message
  [trim-v]
  (fn [db [message]]
-   (update-in db [:rooms (:current-room db)] assoc :current-message message)))
+   (update-in db [:channels (:current-channel db)] assoc :current-message message)))
 
 (register-handler
-  :created-room
+  :created-channel
   [trim-v
-    (after (fn [db [message]] (dispatch [:join-room message])))]
+    (after (fn [db [message]] (dispatch [:join-channel message])))]
   (fn [db [message]]
-    (update db :rooms assoc (:id message) message)))
+    (update db :channels assoc (:id message) message)))
 
 (register-handler
- :join-room
+ :join-channel
  [trim-v
   (after perform-channel-join)]
- (fn [db [room-info]]
-   (assoc db :joining-room room-info)))
+ (fn [db [channel-info]]
+   (assoc db :joining-channel channel-info)))
 
 (register-handler
- :joined-room
+ :joined-channel
  [trim-v]
- transitions/set-as-current-room-and-add-to-open)
+ transitions/set-as-current-channel-and-add-to-open)
 
 (register-handler
- :leave-room
+ :leave-channel
  [trim-v
   (after perform-channel-leave)]
- transitions/leave-room)
+ transitions/leave-channel)

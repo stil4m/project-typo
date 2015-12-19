@@ -26,26 +26,26 @@
 
 (defmulti action (fn [conn component m] (:action m)))
 
-(defmethod action :create-room [conn {:keys [event-bus channel-service]} m]
-  (let [res (channel/create channel-service {:name (:room m)})]
-    (log/info "created room" res)
-    (s/put! conn (encode-message {:event :room-created
-                                  :created-room res}))))
+(defmethod action :create-channel [conn {:keys [event-bus channel-service]} m]
+  (let [res (channel/create channel-service {:name (:channel m)})]
+    (log/info "Created channel" res)
+    (s/put! conn (encode-message {:event :channel-created
+                                  :created-channel res}))))
 
-(defmethod action :join-room [conn {:keys [event-bus channel-service]} {:keys [room-id]}]
+(defmethod action :join-channel [conn {:keys [event-bus channel-service]} {:keys [channel-id]}]
   (s/connect
-   (bus/subscribe event-bus room-id)
+   (bus/subscribe event-bus channel-id)
    (->> conn
         (s/buffer 100))
    {:upstream? true
     :downstream? true}))
 
-(defmethod action :leave-room [conn {:keys [event-bus channel-service]} {:keys [room-id]}]
-  (bus/downstream event-bus room-id))
+(defmethod action :leave-channel [conn {:keys [event-bus channel-service]} {:keys [channel-id]}]
+  (bus/downstream event-bus channel-id))
 
-(defmethod action :message [_ {:keys [event-bus]} {:keys [room body] :as msg}]
+(defmethod action :message [_ {:keys [event-bus]} {:keys [channel body] :as msg}]
   (log/info "got message" msg)
-  (bus/publish! event-bus room (encode-message msg)))
+  (bus/publish! event-bus channel (encode-message msg)))
 
 (defmethod action :default [_ _ msg]
   (log/warn "Unhandled action" msg))
@@ -63,9 +63,8 @@
               (if-not conn
                 ;; if it wasn't a valid websocket handshake, return an error
                 non-websocket-request
-                ;; otherwise, take the first two messages, which give us the chatroom and name
-                (d/let-flow [room (s/take! conn)]
-                            (action conn component (decode-message room))
+                (d/let-flow [channel (s/take! conn)]
+                            (action conn component (decode-message channel))
                             (s/consume
                              #(action conn component (decode-message %))
                              (->> conn
