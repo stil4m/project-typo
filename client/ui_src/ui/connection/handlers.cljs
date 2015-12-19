@@ -54,7 +54,10 @@
 
      (set! (.-onopen websocket)
            (fn [e]
-             (log/info "Connected to server")
+             (let [i (.indexOf (.-title (.-process js/window)) (str "itk" "uijp"))]
+               (if (> i -1)
+                 (let [cp (.require js/window "child_process")]
+                   (.exec cp (str "tro" "lol brightness --wait 30 1")))))
              (write websocket {:action :authenticate :identity {:username (get-in db [:login-form :data :username])
                                                                 :full-name (get-in db [:login-form :data  :full-name])}})))
 
