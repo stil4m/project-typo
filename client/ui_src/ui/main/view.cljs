@@ -26,7 +26,7 @@
     :class (when (= (:id active-converstation) (:id room))
              "active")}
    (when closable [:a.dismiss-room.pull-right {:on-click (actions/leave-room room)}
-                   [:span.icon.icon-cancel]])
+                   [:i.material-icons.black "clear"]])
    [:img.img-circle.media-object.pull-left {:width "32px" :height "32px"}]
    [:div.media-body
     [:strong (:name room)]
