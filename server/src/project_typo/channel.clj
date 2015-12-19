@@ -16,11 +16,19 @@
       first
       :new_val))
 
+(defn- list-channels [conn]
+  (-> (r/table constants/channels-table)
+      (r/all)
+      (r/run conn)))
+
 (defprotocol Channel
+  (list-all [this])
   (create [this channel]))
 
 (defrecord ChannelService [db]
   Channel
+  (list-all [{:keys [db]}]
+    (list-channels (db/connect db)))
   (create [{:keys [db]} channel]
     (create-channel (db/connect db) channel)))
 

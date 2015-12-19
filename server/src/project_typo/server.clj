@@ -26,13 +26,17 @@
 
 (defmulti action (fn [conn component m] (:action m)))
 
-(defmethod action :create-channel [conn {:keys [event-bus channel-service]} m]
-  (let [res (channel/create channel-service {:name (:channel m)})]
-    (log/info "Created channel" res)
+(defmethod action :create-channel [{:keys [conn]}
+                                {:keys [event-bus channel-service]}
+                                {:keys [name]}]
+  (let [res (channel/create channel-service {:name name})]
+    (log/info "created channel" res)
     (s/put! conn (encode-message {:event :channel-created
                                   :created-channel res}))))
 
-(defmethod action :join-channel [conn {:keys [event-bus channel-service]} {:keys [channel-id]}]
+(defmethod action :join-channel [{:keys [conn]}
+                              {:keys [event-bus channel-service]}
+                              {:keys [channel-id]}]
   (s/connect
    (bus/subscribe event-bus channel-id)
    (->> conn
@@ -40,10 +44,21 @@
    {:upstream? true
     :downstream? true}))
 
-(defmethod action :leave-channel [conn {:keys [event-bus channel-service]} {:keys [channel-id]}]
+(defmethod action :leave-channel [{:keys [conn]}
+                               {:keys [event-bus channel-service]}
+                               {:keys [channel-id]}]
   (bus/downstream event-bus channel-id))
 
-(defmethod action :message [_ {:keys [event-bus]} {:keys [channel body] :as msg}]
+(defmethod action :list-channels [{:keys [conn]}
+                               {:keys [channel-service]}
+                               _]
+  (s/put! conn (encode-message {:event :all-channels
+                                :channels (channel/list-all channel-service)})))
+
+(defmethod action :message [{:keys [conn]}
+                            {:keys [event-bus]}
+                            {:keys [channel body] :as msg}]
+
   (log/info "got message" msg)
   (bus/publish! event-bus channel (encode-message msg)))
 
@@ -55,27 +70,53 @@
    :headers {"content-type" "application/text"}
    :body "Expected a websocket request."})
 
+(defn start-connection [component conn]
+  (d/let-flow [channel (s/take! conn)
+               uuid (java.util.UUID/randomUUID)
+               connections (:connections component)
+               context {:uuid uuid :conn conn}]
+
+              ;; Add to local state
+              (swap! connections assoc uuid context)
+
+              ;; Register to on closed callback
+              (s/on-closed conn (fn [] (swap! connections dissoc uuid)))
+
+              ;; Handle initial message
+              (action context component (decode-message channel))
+
+              ;; Start Heartbeat
+              (comment
+                (s/connect
+                 (->> conn
+                      (s/buffer 100))
+                 (s/periodically 10000 #(encode-message {:event :heartbeat}))))
+
+              ;; Consume messsages from connected client
+              (s/consume
+               #(action context component (decode-message %))
+               (->> conn
+                    (s/buffer 100)))))
+
 (defn chat-handler
   [component req]
   (d/let-flow [conn (d/catch
                         (http/websocket-connection req)
                         (fn [_] nil))]
               (if-not conn
-                ;; if it wasn't a valid websocket handshake, return an error
                 non-websocket-request
-                (d/let-flow [channel (s/take! conn)]
-                            (action conn component (decode-message channel))
-                            (s/consume
-                             #(action conn component (decode-message %))
-                             (->> conn
-                                  (s/buffer 100)))))))
+                (start-connection component conn))))
 
 (defrecord Server [port instance channel-service event-bus]
   component/Lifecycle
   (start [component]
     (log/info "Starting server on port " port)
-    (let [instance (http/start-server (partial chat-handler component) {:port port})]
-      (assoc component :instance instance)))
+    (let [connections (atom {})
+          instance (http/start-server (partial chat-handler (assoc component
+                                                             :connections connections)) {:port port})]
+      (assoc component
+             :instance instance
+             :connections connections)))
   (stop [component]
     (log/info "Stopping server..")
     (when-let [instance (:instance component)]
