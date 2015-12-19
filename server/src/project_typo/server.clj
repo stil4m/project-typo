@@ -10,8 +10,25 @@
             [manifold.stream :as s]
             [manifold.stream :as stream]
             [project-typo.channel :as channel]
-            [rethinkdb.query :as r])
+            [project-typo.messages :as messages]
+            [rethinkdb.query :as r]
+            [clj-time.coerce :as coerce])
   (:import [java.io ByteArrayInputStream ByteArrayOutputStream]))
+
+(def ^:private joda-time-verbose-handler
+  (transit/write-handler
+   (constantly "t")
+   (fn [v] (-> v coerce/to-date .getTime))
+   (fn [v] (coerce/to-string v))))
+
+(def ^:private joda-time-handler
+  (transit/write-handler
+   (constantly "m")
+   (fn [v] (-> v coerce/to-date .getTime))
+   (fn [v] (-> v coerce/to-date .getTime .toString))
+   joda-time-verbose-handler))
+
+(def custom-transit-handlers {org.joda.time.DateTime joda-time-handler})
 
 (defn decode-message [msg]
   (let [in (ByteArrayInputStream. (.getBytes msg))
@@ -20,7 +37,7 @@
 
 (defn encode-message [msg]
   (let [out (ByteArrayOutputStream. 4096)
-        writer (transit/writer out :json)]
+        writer (transit/writer out :json {:handlers custom-transit-handlers})]
     (transit/write writer msg)
     (.toString out)))
 
@@ -53,14 +70,19 @@
                                 :channels (channel/list-all channel-service)})))
 
 (defmethod action :message message [{:keys [conn]}
-                            {:keys [event-bus]}
+                            {:keys [event-bus message-service]}
                             {:keys [channel body] :as msg}]
   (log/info "got message" msg)
-  (bus/publish! event-bus channel (encode-message
-                                   (assoc
-                                    msg
-                                    :event
-                                    :new-message))))
+  (let [created-message (messages/create message-service (select-keys msg [:channel :body :client-id]))]
+    (log/info "created message" msg)
+    (bus/publish!
+     event-bus
+     channel
+     (encode-message
+      (assoc
+       created-message
+       :event
+       :new-message)))))
 
 (defmethod action :default [_ _ msg]
   (log/warn "Unhandled action" msg))
@@ -105,7 +127,7 @@
                 non-websocket-request
                 (start-connection component conn))))
 
-(defrecord Server [port instance channel-service event-bus]
+(defrecord Server [port instance channel-service message-service event-bus]
   component/Lifecycle
   (start [component]
     (log/info "Starting server on port " port)
