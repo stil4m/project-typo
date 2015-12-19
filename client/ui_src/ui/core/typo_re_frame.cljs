@@ -1,4 +1,4 @@
-(ns ui.typo-re-frame
+(ns ui.core.typo-re-frame
   (:require [re-frame.core :refer [after debug trim-v dispatch register-handler]]
             [schema.core :as s]
             [ui.core.schema :as schema]))
@@ -13,4 +13,8 @@
  :validate-db
  [trim-v]
  (fn [db v]
-   (s/validate schema/AppState db)))
+   (try
+     (s/validate schema/AppState db)
+     (catch js/Object e
+       (.error js/console (str e))))
+   db))

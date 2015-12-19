@@ -1,7 +1,7 @@
-
 (ns ui.connection.handlers
   (:require [cognitect.transit :as t]
-            [re-frame.core :refer [register-handler dispatch trim-v]]
+            [re-frame.core :refer [register-handler dispatch]]
+            [ui.core.typo-re-frame :refer [default-middleware]]
             [adzerk.cljs-console :as log :include-macros true]))
 
 (defn write [websocket message]
@@ -65,6 +65,6 @@
 
 (register-handler
  :connection/update-address
- [trim-v]
+ [default-middleware]
  (fn [db [new-address]]
    (update-in db [:connection] assoc :address new-address)))

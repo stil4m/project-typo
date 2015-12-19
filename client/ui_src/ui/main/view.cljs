@@ -54,13 +54,15 @@
 (defn message-panel
   [current-channel]
   [:div.content.flex-auto.flex.flex-column.bg-white
-   [:div.py2.bg-gray.bg-light-gray.flex.border-bottom.border-color-silver
-    [:h1.h2.regular.flex-auto.dark-gray.m0.ml3 (:name current-channel)]
-    [:div.flex-none.mr2.flex.flex-column
-     [:i.material-icons.dark-gray.flex-center.flex-none "search"]]]
-   [messages/message-list (concat (:messages current-channel)
-                                (:queue current-channel))]
-   [message-box current-channel]])
+   (when current-channel
+     [:div
+      [:div.py2.bg-gray.bg-light-gray.flex.border-bottom.border-color-silver
+       [:h1.h2.regular.flex-auto.dark-gray.m0.ml3 (:name current-channel)]
+       [:div.flex-none.mr2.flex.flex-column
+        [:i.material-icons.dark-gray.flex-center.flex-none "search"]]]
+      [messages/message-list (concat (:messages current-channel)
+                                     (:queue current-channel))]
+      [message-box current-channel]])])
 
 (defn render
   []

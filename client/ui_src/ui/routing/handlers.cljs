@@ -1,8 +1,8 @@
 (ns ui.routing.handlers
   (:require [ui.routing.transitions :as transitions]
+            [ui.core.typo-re-frame :refer [default-middleware]]
             [re-frame.core :refer [register-handler
-                                   path
-                                   trim-v]]))
+                                   path]]))
 
 (defn flat-apply-fn
   [f]
@@ -11,20 +11,20 @@
 
 (register-handler
   :routing/go-back
-  [trim-v (path [:route])]
+  [default-middleware (path [:route])]
   transitions/go-back)
 
 (register-handler
   :routing/go-forward
-  [trim-v (path [:route])]
+  [default-middleware (path [:route])]
   transitions/go-forward)
 
 (register-handler
   :routing/add-route
-  [trim-v (path [:route])]
+  [default-middleware (path [:route])]
   (flat-apply-fn transitions/add-route))
 
 (register-handler
   :routing/set-route
-  [trim-v (path [:route])]
+  [default-middleware (path [:route])]
   (flat-apply-fn transitions/set-route))
