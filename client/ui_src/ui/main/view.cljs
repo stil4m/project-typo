@@ -11,14 +11,14 @@
    (doall (map
            (fn [item]
              [:li.lh2.h5.flex.rounded.mb05 {:key (:id item)
-                                                    :class (when (= (:id item) (:id current-channel))
-                                                             "bg-dark-overlay")
+                                                 :class (when (= (:id item) (:id current-channel))
+                                                          "bg-dark-overlay")
                                                     :on-click (actions/select-channel item)}
               [:span.ml1.status [:i.material-icons
-                             {:class (if (pos? (:unread item))
-                                       "orange"
-                                       "white")}
-                             "lens"]]
+                                 {:class (if (pos? (:unread item))
+                                           "orange"
+                                           "white")}
+                                 "lens"]]
               [:span.flex-auto.px1.truncate.light-blue (:name item)]
               [:span.mr1.unread-messages.light-blue.muted.col-1.right-align (when (pos? (:unread item)) (:unread item))]])
            items))))
@@ -27,7 +27,7 @@
   [current-channel channels-state]
   [:nav.flex.flex-none.flex-column.contacts-sidebar.bg-dark-blue {:style {:padding "5px"}}
    [:div.flex.flex-row
-    [:button.mt3.mr1.ml1.flex-auto.h5.btn.btn-primary.dark-gray.bg-white.regular "+ New Chat"]]
+    [:button.mt3.mr1.ml1.flex-auto.h5.btn.btn-primary.dark-gray.bg-white.regular {:on-click (actions/create-channel "My room")} "+ New Chat"]]
    [:div.flex-auto.mt6
     [channel-list "Rooms"
      current-channel

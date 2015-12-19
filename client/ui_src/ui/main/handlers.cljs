@@ -17,6 +17,10 @@
   (let [channel (get-in db [:channels (:current-channel db)])]
     (write (get-in db [:connection :ws]) {:action :message :channel (:id channel) :body message})))
 
+(defn perform-channel-create
+  [db [channel]]
+  (write (get-in db [:connection :ws]) (merge {:action :create-channel } (select-keys channel [:name]))))
+
 (defn perform-channel-join
   [db [channel]]
   (if (has-channel-open? db channel)
@@ -45,6 +49,14 @@
  [trim-v]
  (fn [db [message]]
    (update-in db [:channels (:current-channel db)] assoc :current-message message)))
+
+(register-handler
+  :create-channel
+  [trim-v
+    (after perform-channel-create)]
+  (fn [db [channel]]
+    (do
+      (assoc db :creating-channel (:name channel)))))
 
 (register-handler
   :created-channel

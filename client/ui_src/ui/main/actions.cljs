@@ -2,6 +2,12 @@
   (:require [re-frame.core :refer [dispatch]]
             [ui.util.events :as util]))
 
+(defn create-channel
+  [name]
+  (fn [e]
+    (.preventDefault e)
+    (dispatch [:create-channel {:name name}])))
+
 (defn leave-channel
   [channel]
   (fn [e]
