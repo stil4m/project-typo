@@ -6,28 +6,28 @@
                                    trim-v]]
             [adzerk.cljs-console :as log :include-macros true]
             [ui.main.transitions :as transitions]
-            [ui.core.handlers :refer [write]]))
+            [ui.connection.handlers :refer [write]]))
 
+(defn has-channel-open?
+  [db channel]
+  (contains? (set (:open-rooms db)) (:id channel)))
 
 (defn send-message-for-current-room
   [db [message]]
   (let [room (get-in db [:rooms (:current-room db)])]
-    (write (get db :ws) {:action :message :room (:id room) :body message})))
+    (write (get-in db [:connection :ws]) {:action :message :room (:id room) :body message})))
 
-(defn perform-room-join
-  [db [room-info]]
-  (if (contains? (set (:open-rooms db)) (:id (:joining-room db)))
-    (dispatch [:joined-room room-info])
+(defn perform-channel-join
+  [db [channel]]
+  (if (has-channel-open? db channel)
+    (dispatch [:joined-room channel])
     (do
-      (log/info "TODO | Join ROOM:")
-      (log/info "TODO | - room ~{(:id room-info)}")
-      (dispatch [:joined-room room-info]))))
+      (write (get-in db [:connection :ws]) {:action :join-room :room (:id channel)})
+      (dispatch [:joined-room channel]))))
 
-(defn perform-room-leave
+(defn perform-channel-leave
   [db [room]]
-  (log/info "TODO | Leave ROOM:")
-  (log/info "TODO | - room ~{(:id room)}"))
-
+  (write (get-in db [:connection :ws]) {:action :leave-room :room (:id room)}))
 
 (register-handler
  :set-active-room
@@ -47,9 +47,16 @@
    (update-in db [:rooms (:current-room db)] assoc :current-message message)))
 
 (register-handler
+  :created-room
+  [trim-v
+    (after (fn [db [message]] (dispatch [:join-room message])))]
+  (fn [db [message]]
+    (update db :rooms assoc (:id message) message)))
+
+(register-handler
  :join-room
  [trim-v
-  (after perform-room-join)]
+  (after perform-channel-join)]
  (fn [db [room-info]]
    (assoc db :joining-room room-info)))
 
@@ -61,5 +68,5 @@
 (register-handler
  :leave-room
  [trim-v
-  (after perform-room-leave)]
+  (after perform-channel-leave)]
  transitions/leave-room)

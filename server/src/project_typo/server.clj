@@ -37,6 +37,9 @@
 (defmethod action :join-room [_ chatrooms m]
   (log/info "joined room" m))
 
+(defmethod action :leave-room [_ chatrooms m]
+  (log/info "left room" m))
+
 (def non-websocket-request
   {:status 400
    :headers {"content-type" "application/text"}
