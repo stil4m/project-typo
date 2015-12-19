@@ -5,7 +5,8 @@
                                    after
                                    trim-v]]
             [ui.util.routing :as routing]
-            [ui.core.routes :as routes]))
+            [ui.core.routes :as routes]
+            [ui.connection.handlers :refer [write]]))
 
 (defn validate-login-data-for-submission
   [db]
@@ -15,14 +16,24 @@
                       :login-submission-data-invalid)]
     (dispatch [next-action])))
 
-(defn perform-login
-  []
-  (re-frame.core/dispatch [:connect-to-server])
-  ;TODO Start loading sequence
-  (dispatch [:login-success {:token "1234567890ABCDEF"
-                             :username "stil4m"
-                             :full-name "Mats Stijlaart"
-                             :description "Beer Fanatic"}]))
+
+(register-handler
+ :authentication-complete
+ [trim-v
+  (after (fn [db] (write (get-in db [:connection :ws]) {:action :list-channels})))
+  (after #(dispatch [:login-success {:token "1234567890ABCDEF"
+                                      :username "stil4m"
+                                      :full-name "Mats Stijlaart"
+                                      :description "Beer Fanatic"}]))]
+ (fn [db]
+   (assoc db :authenticating false)))
+
+(register-handler
+ :authentication-failed
+ [trim-v]
+ (fn [db]
+   (assoc db :authenticating false)))
+
 
 (register-handler
   :login-success
@@ -35,11 +46,8 @@
 (register-handler
   :login-submission-data-valid
   [trim-v
-   (path :login-form)
-   (after perform-login)]
-  (fn [db]
-    ;TODO UNSET LOADING
-    db))
+   (after #(dispatch [:connect-to-server]))]
+  identity)                                                 ;TODO
 
 (register-handler
   :login-submission-data-invalid
@@ -54,7 +62,7 @@
    (path [:login-form])
    (after validate-login-data-for-submission)]
   (fn [db]
-    (assoc db :loading true)))
+    (assoc db :authenticating true)))
 
 (register-handler
   :login-form/change

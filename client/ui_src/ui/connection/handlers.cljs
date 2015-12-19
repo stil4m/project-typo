@@ -28,6 +28,12 @@
 (defmethod event :all-channels [message]
   (dispatch [:fetched-all-channels (:channels message)]))
 
+(defmethod event :authentication
+  [message]
+  (if (:result message)
+    (dispatch [:authentication-complete])
+    (dispatch [:authentication-failed])))
+
 (defmethod event :heartbeat [message]
   (log/debug "Heartbeat..."))
 
@@ -38,6 +44,8 @@
  :connect-to-server
  (fn [db]
    (let [websocket (new js/WebSocket (get-in db [:connection :address]))]
+     (.log js/console "I GOT A WEBSOCKET")
+     (.log js/console (str db))
      (set! (.-onmessage websocket)
            (fn [e]
              (event (read (.-data e)))))
@@ -49,7 +57,8 @@
      (set! (.-onopen websocket)
            (fn [e]
              (log/info "Connected to server")
-             (write websocket {:action :list-channels})))
+             (write websocket {:action :authenticate :identity {:username (get-in db [:login-form :data :username])
+                                                                :full-name (get-in db [:login-form :data  :full-name])}})))
 
      (assoc-in db [:connection :ws] websocket))))
 
