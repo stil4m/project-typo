@@ -6,28 +6,30 @@
 (defn channel-list
   [title  current-channel items]
   (into
-   [:ul.mb3.px1 {:style {:list-style :none}}
-    [:li [:h1.h6.px1.caps.light-blue.muted title]]]
+   [:ul.mb3.p0 {:style {:list-style :none}}
+    [:li [:h1.h6.ml1.caps.light-blue.muted title]]]
    (doall (map
            (fn [item]
-             [:li.lh2.h5.flex.px1.rounded.px1.mb05 {:key (:id item)
+             [:li.lh2.h5.flex.rounded.mb05 {:key (:id item)
                                                     :class (when (= (:id item) (:id current-channel))
                                                              "bg-dark-overlay")
                                                     :on-click (actions/select-channel item)}
-              [:span.status [:i.material-icons
+              [:span.ml1.status [:i.material-icons
                              {:class (if (pos? (:unread item))
                                        "orange"
                                        "white")}
                              "lens"]]
               [:span.flex-auto.px1.truncate.light-blue (:name item)]
-              [:span.unread-messages.light-blue.muted.col-3.right-align (when (pos? (:unread item)) (:unread item))]])
+              [:span.mr1.unread-messages.light-blue.muted.col-1.right-align (when (pos? (:unread item)) (:unread item))]])
            items))))
 
 (defn contacts-side-bar
   [current-channel channels-state]
-  [:nav.flex.flex-none.flex-column.contacts-sidebar.bg-dark-blue
+  [:nav.flex.flex-none.flex-column.contacts-sidebar.bg-dark-blue {:style {:padding "5px"}}
+   [:div.flex.flex-row
+    [:button.mt3.mr1.ml1.flex-auto.h5.btn.btn-primary.dark-gray.bg-white.regular "+ New Chat"]]
    [:div.flex-auto.mt6
-    [channel-list "Channels"
+    [channel-list "Rooms"
      current-channel
      (:channels channels-state)]
     [channel-list "People"

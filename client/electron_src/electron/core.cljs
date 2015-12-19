@@ -8,7 +8,7 @@
 
 (defn init-browser []
   (reset! main-window (browser-window.
-                        (clj->js {:titleBarStyle "hidden"
+                        (clj->js {:titleBarStyle "hidden-inset"
                                   :width 800
                                   :height 600})))
   ; Path is relative to the compiled js file (main.js in our case)

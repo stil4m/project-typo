@@ -26,6 +26,7 @@
                           :name "Just Jokes"
                           :description "Wait whut?!"
                           :private false
+                          :unread 3
                           :people ["matstijl"
                                    "tomtheun"
                                    "maaarts"
