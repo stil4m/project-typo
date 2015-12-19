@@ -5,14 +5,14 @@
             [adzerk.cljs-console :as log :include-macros true]))
 
 (defn write [websocket message]
-  (log/info "Sending message ~{message}")
+  (log/debug "Sending message ~{message}")
   (let [w (t/writer :json)]
     (.send websocket (t/write w message))))
 
 (defn read [message]
   (let [r (t/reader :json)
         message (t/read r message)]
-    (log/info "Received message ~{message}")
+    (log/debug "Received message ~{message}")
     message))
 
 (defmulti event (fn [message] (:event message)))
@@ -20,6 +20,9 @@
 (defmethod event :channel-created [message]
   (log/info "Created channel ~{message}")
   (dispatch [:created-channel (:created-channel message)]))
+
+(defmethod event :heartbeat [message]
+  (log/debug "Heartbeat..."))
 
 (defmethod event :default [message]
   (log/warn "Unhandled event ~{message}"))
@@ -38,8 +41,8 @@
 
      (set! (.-onopen websocket)
            (fn [e]
-             (write websocket {:action :create-channel :channel "My channel"})
-             (write websocket {:action :message :channel "My channel" :body "main"})))
+             (write websocket {:action :create-channel :name "My room"})))
+
      (assoc-in db [:connection :ws] websocket))))
 
 (defn ^:export send-message [channel message]
