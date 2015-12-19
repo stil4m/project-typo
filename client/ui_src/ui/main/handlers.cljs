@@ -45,13 +45,13 @@
  :send-current-message
  [trim-v
   (after send-message-for-current-room)]
- (fn [db [message]]
+ (fn [db [message-body]]
    (-> (update-in db [:rooms (:current-room db)] dissoc :current-message)
        (update-in [:rooms (:current-room db) :messages] conj {:sending true
-                                                                              :user (get-in db [:user :username])
-                                                                              :message message})
+                                                              :user (get-in db [:user :username])
+                                                              :body message-body})
        (update-in [:message-queue] conj {:room (:current-room db)
-                                         :message message}))))
+                                         :body message-body}))))
 
 (register-handler
  :update-current-message

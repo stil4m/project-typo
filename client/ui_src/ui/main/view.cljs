@@ -11,7 +11,7 @@
    [:td
     [:span.time (str (js/Date. (:time message)))]
     [:span.user (:user message)]
-    [:div.message [:span (:message message)]]]])
+    [:div.message [:span (:body message)]]]])
 
 (defn footer
   []

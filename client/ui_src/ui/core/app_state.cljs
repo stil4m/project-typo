@@ -30,16 +30,16 @@
                              "guest1234"]
                     :messages [{:user "guest1234"
                                 :time 1450041030000
-                                :message "Weet je hoe ze een stalker noemen met ski-stokken?"}
+                                :body "Weet je hoe ze een stalker noemen met ski-stokken?"}
                                {:user "mitkuijp"
                                 :time 1450041040000
-                                :message "Wat dan flip?"}
+                                :body "Wat dan flip?"}
                                {:user "guest1234"
                                 :time 1450041050000
-                                :message "Een Nordic Stalke."}
+                                :body "Een Nordic Stalker."}
                                {:user "tomtheun"
                                 :time 1450041060000
-                                :message "Classic :p"}]}
+                                :body "Classic :p"}]}
            "room2" {:id "room2"
                     :name "TPL"
                     :description "TPL people room. Own people first"
@@ -49,7 +49,7 @@
                              "maaarts"]
                     :messages [{:user "matstijl"
                                 :time 1450041030000
-                                :message "Anyone there!?"}]}
+                                :body "Anyone there!?"}]}
            "room3" {:id "room3"
                     :name "Christmas Hackton"
                     :description nil
@@ -59,47 +59,47 @@
                              "tomtheun"
                              "maaarts"]
                     :messages [{:user "tomtheun"
-                                :message "Hi"
+                                :body "Hi"
                                 :time 1450041030000}
                                {:user "mitkuijp"
-                                :message "Morning, had a good sleep?"
+                                :body "Morning, had a good sleep?"
                                 :time 1450041040000}
                                {:user "tomtheun"
-                                :message "Do you know where @stil4m is?"
+                                :body "Do you know where @stil4m is?"
                                 :time 1450041050000}
                                {:user "stil4m"
-                                :message "Here I am"
+                                :body "Here I am"
                                 :time 1450041060000}
                                {:user "stil4m"
-                                :message "Sorry I am late"
+                                :body "Sorry I am late"
                                 :time 1450041070000}
                                {:user "mitkuijp"
-                                :message "Always the same song :p"
+                                :body "Always the same song :p"
                                 :time 1450041080000}
                                {:user "tomtheun"
-                                :message "Ok guys, lets get to it. The plan for today is to build an awesome chat client. I hope you have brought your pyjamas, because it is going to be a long weekend."
+                                :body "Ok guys, lets get to it. The plan for today is to build an awesome chat client. I hope you have brought your pyjamas, because it is going to be a long weekend."
                                 :time 1450041090000}
                                {:user "stil4m"
-                                :message "Got them with me"
+                                :body "Got them with me"
                                 :time 1450041100000}
                                {:user "mitkuijp"
-                                :message "Yes"
+                                :body "Yes"
                                 :time 1450041110000}
                                {:user "tomtheun"
-                                :message "Who wants (beer)?"
+                                :body "Who wants (beer)?"
                                 :time 1450041120000}
                                {:user "stil4m"
-                                :message "(areyoukiddingme)"
+                                :body "(areyoukiddingme)"
                                 :time 1450041130000}
                                {:user "mitkuijp"
-                                :message "Yep"
+                                :body "Yep"
                                 :time 1450041140000}
                                {:user "mitkujp"
-                                :message "s/Yep/Yes"
+                                :body "s/Yep/Yes"
                                 :time 1450041150000}
                                {:user "stil4m"
-                                :message "Ok, I'll will also have one, but only one."
+                                :body "Ok, I'll will also have one, but only one."
                                 :time 1450041160000}
                                {:user "tomtheun"
-                                :message "3 beers coming up"
+                                :body "3 beers coming up"
                                 :time 1450041170000}]}}})
