@@ -42,22 +42,24 @@
 
 (defn message-box
   [channel]
-  [:div.border-top.border-color-silver
-   [:div.mr3.ml3.mt2.mb2.flex.flex-row
+  [:div.border-top.border-color-silver.ml2.mr2
+   [:div.mt2.mb2.flex.flex-row
     [:input.flex-auto.border.border-color-silver.rounded
      {:type :text
       :on-key-down (actions/handle-message-input-key-stroke (:current-message channel))
       :on-change actions/update-current-message
       :value (:current-message channel)
-      :placeholder "Type your message here"}]]])
+      :placeholder "Type your message here"}]
+    [:i.material-icons.dark-gray.px1.mt05 "insert_emoticon"]]])
+
 
 (defn message-panel
   [current-channel]
-  [:div.content.flex-auto.flex.flex-column.bg-white
-   [:div.py2.bg-gray.bg-light-gray.flex.border-bottom.border-color-silver
-    [:h1.h2.regular.flex-auto.dark-gray.m0.ml3 (:name current-channel)]
-    [:div.flex-none.mr2.flex.flex-column
-     [:i.material-icons.dark-gray.flex-center.flex-none "search"]]]
+  [:div.content.flex-auto.flex.flex-column.bg-white.pt2
+   [:div.py2.ml3.mr3.flex.border-bottom.border-color-silver
+    [:h1.h2.regular.flex-auto.dark-gray.m0.ml1 (:name current-channel)]
+    [:i.material-icons.dark-gray.px1.mt05 "search"]
+    [:i.material-icons.dark-gray.px1.mt05 "info_outline"]]
    [messages/message-list (concat (:messages current-channel)
                                 (:queue current-channel))]
    [message-box current-channel]])
@@ -70,5 +72,5 @@
     (fn []
       [:div.window.flex.flex-row
        [contacts-side-bar @current-channel @channels-state]
-       [message-panel @current-channel]
-       [:aside.flex.flex-none.operations-sidebar.bg-light-gray.border-left.border-color-silver]])))
+       [message-panel @current-channel]])))
+       ;[:aside.flex.flex-none.operations-sidebar.bg-light-gray.border-left.border-color-silver]])))
