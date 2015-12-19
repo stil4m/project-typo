@@ -83,8 +83,7 @@
  :join-channel
  [default-middleware
   (after perform-channel-join)]
- (fn [db [channel-info]]
-   (assoc db :joining-channel channel-info)))
+ identity)
 
 (register-handler
  :joined-channel

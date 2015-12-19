@@ -8,18 +8,22 @@
 ;Login Form
 ; Channel
 
+(def ValidBody
+  #"[^\\s]")
+
 (def PersistedMessage
   "A schema for the message that was broadcased by the server"
-  {(s/required-key :channel-id) s/Str
+  {(s/required-key :channel) s/Str
    (s/required-key :client-id) s/Str
    (s/required-key :id) s/Str
    (s/required-key :time) js/Date
    (s/required-key :user) s/Str
-   (s/required-key :body) s/Str})
+   (s/required-key :body) ValidBody})
+
 
 (def QueuedMessage
   "A schema for the message that was was send "
-  {(s/required-key :body) s/Str
+  {(s/required-key :body) ValidBody
    (s/required-key :client-id) s/Str})
 
 (def ServerConnection
@@ -38,8 +42,15 @@
    :history [s/Any]
    :future [s/Any]})
 
+(def Channel
+  {:id s/Str
+   :name s/Str
+   :messages [PersistedMessage]
+   (s/optional-key :current-message) (s/maybe s/Str)
+   :queue [QueuedMessage]})
+
 (def Channels
-  {})
+  {s/Str Channel})
 
 (def Status
   (s/enum :online :offline :busy))

@@ -4,16 +4,16 @@
             [ui.components.messages :as messages]))
 
 (defn channel-list
-  [title  current-channel items]
+  [title current-channel items]
   (into
    [:ul.mb3.p0 {:style {:list-style :none}}
     [:li [:h1.h6.ml1.caps.light-blue.muted title]]]
    (doall (map
            (fn [item]
              [:li.lh2.h5.flex.rounded.mb05 {:key (:id item)
-                                                 :class (when (= (:id item) (:id current-channel))
-                                                          "bg-dark-overlay")
-                                                    :on-click (actions/select-channel item)}
+                                            :class (when (= (:id item) (:id current-channel))
+                                                     "bg-dark-overlay")
+                                            :on-click (actions/select-channel item)}
               [:span.ml1.status [:i.material-icons
                                  {:class (if (pos? (:unread item))
                                            "orange"
@@ -53,16 +53,15 @@
 
 (defn message-panel
   [current-channel]
-  [:div.content.flex-auto.flex.flex-column.bg-white
-   (when current-channel
-     [:div
-      [:div.py2.bg-gray.bg-light-gray.flex.border-bottom.border-color-silver
-       [:h1.h2.regular.flex-auto.dark-gray.m0.ml3 (:name current-channel)]
-       [:div.flex-none.mr2.flex.flex-column
-        [:i.material-icons.dark-gray.flex-center.flex-none "search"]]]
-      [messages/message-list (concat (:messages current-channel)
-                                     (:queue current-channel))]
-      [message-box current-channel]])])
+  (into [:div.content.flex-auto.flex.flex-column.bg-white]
+        (when current-channel
+          [[:div.py2.bg-gray.bg-light-gray.flex.border-bottom.border-color-silver
+            [:h1.h2.regular.flex-auto.dark-gray.m0.ml3 (:name current-channel)]
+            [:div.flex-none.mr2.flex.flex-column
+             [:i.material-icons.dark-gray.flex-center.flex-none "search"]]]
+           [messages/message-list (concat (:messages current-channel)
+                                          (:queue current-channel))]
+           [message-box current-channel]])))
 
 (defn render
   []

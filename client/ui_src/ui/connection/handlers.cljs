@@ -23,7 +23,7 @@
 
 (defmethod event :new-message [message]
   (log/info "Received message ~{message}")
-  (dispatch [:received-message message]))
+  (dispatch [:received-message (dissoc message :event)]))
 
 (defmethod event :all-channels [message]
   (dispatch [:fetched-all-channels (:channels message)]))
