@@ -73,11 +73,15 @@
   (s/put! conn (encode-message {:event :all-channels
                                 :channels (channel/list-all channel-service)})))
 
-(defmethod action :message message [{:keys [conn]}
+(defmethod action :message message [{:keys [conn username]}
                             {:keys [event-bus message-service]}
                             {:keys [channel body] :as msg}]
   (log/info "got message" msg)
-  (let [created-message (messages/create message-service (select-keys msg [:channel :body :client-id]))]
+  (let [created-message (messages/create
+                         message-service
+                         (->
+                          (select-keys msg [:channel :body :client-id])
+                          (assoc :user username)))]
     (log/info "created message" msg)
     (bus/publish!
      event-bus
@@ -97,30 +101,41 @@
    :body "Expected a websocket request."})
 
 (defn start-connection [component conn]
-  (d/let-flow [channel (s/take! conn)
+  (d/let-flow [msg (s/take! conn)
+               authentication (decode-message msg)
+               authentication-call? (= :authenticate (:action authentication))
                connections (:connections component)
-               context {:conn conn :subscriptions (atom {})}]
+               context {:username (get-in authentication [:identity :username])
+                        :full-name (get-in authentication [:identity :full-name])
+                        :conn conn
+                        :subscriptions (atom {})}]
 
-              ;; Add to local state
-              (swap! connections assoc conn context)
+              (s/put! conn
+                      (encode-message
+                       {:event :authentication
+                        :result (if authentication-call? :ok :failed)}))
 
-              ;; Register to on closed callback
-              (s/on-closed conn
-                           (fn [] (swap! connections dissoc conn)))
+              (if (not authentication-call?)
+                (s/close! conn))
 
-              ;; Handle initial message
-              (action context component (decode-message channel))
+              (when authentication-call?
+                ;; Add to local state
+                (swap! connections assoc conn context)
 
-              ;; Start Heartbeat
-              (s/connect
-               (s/periodically 10000 #(encode-message {:event :heartbeat}))
-               conn)
+                ;; Register to on closed callback
+                (s/on-closed conn
+                             (fn [] (swap! connections dissoc conn)))
 
-              ;; Consume messsages from connected client
-              (s/consume
-               #(action context component (decode-message %))
-               (->> conn
-                    (s/buffer 100)))))
+                ;; Start Heartbeat
+                (s/connect
+                 (s/periodically 10000 #(encode-message {:event :heartbeat}))
+                 conn)
+
+                ;; Consume messsages from connected client
+                (s/consume
+                 #(action context component (decode-message %))
+                 (->> conn
+                      (s/buffer 100))))))
 
 (defn chat-handler
   [component req]
