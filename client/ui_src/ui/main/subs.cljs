@@ -19,7 +19,7 @@
    (let [room-list (subscribe [:room-list])
          open-rooms (subscribe [:open-rooms])]
      (reaction {:rooms (map #(get-in @db [:rooms %]) @open-rooms)
-                :people (map #(get-in @db [:rooms %]) @open-rooms)}))))
+                :people ()}))))
 
 (register-sub
  :current-room

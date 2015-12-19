@@ -89,12 +89,10 @@
   [channels-state]
   [:nav.flex.flex-none.flex-column.contacts-sidebar.bg-dark-blue
    [:div.flex-auto.mt6
-    (when (seq (:rooms channels-state))
-      [room-list "Rooms"
-       (:rooms channels-state)])
-    (when (seq (:people channels-state))
-      [room-list "People"
-       (:people channels-state)])]
+    [room-list "Rooms"
+     (:rooms channels-state)]
+    [room-list "People"
+     (:people channels-state)]]
    [:div.user-menu.h4.lh4.px2.flex
     [:span [:i.material-icons.flex-center {:class "green"} "lens"]]
     [:span.name.px1.light-blue.flex-center "Maarten Arts"]
