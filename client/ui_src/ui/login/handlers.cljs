@@ -43,7 +43,8 @@
  :login-success
  [default-middleware
   (path [:user])
-  (after (routing/set-route-fn routes/main))]
+  (after (routing/set-route-fn routes/main))
+  (after #(dispatch [:fetch-all-channels]))]
  (fn [_ [user]]
    user))
 
