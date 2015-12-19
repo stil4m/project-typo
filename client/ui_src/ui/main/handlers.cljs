@@ -24,7 +24,7 @@
 
 (defn perform-channel-create
   [db [channel]]
-  (write (get-in db [:connection :ws]) (merge {:action :create-channel } (select-keys channel [:name]))))
+  (write (get-in db [:connection :ws]) (merge {:action :create-channel} (select-keys channel [:name]))))
 
 (defn perform-channel-join
   [db [channel]]
@@ -56,18 +56,19 @@
    (update-in db [:channels (:current-channel db)] assoc :current-message message)))
 
 (register-handler
-  :create-channel
-  [trim-v
-    (after perform-channel-create)]
-  (fn [db [channel]]
-    (assoc db :creating-channel (:name channel))))
+ :create-channel
+ [trim-v
+  (after perform-channel-create)]
+ (fn [db [channel]]
+   (assoc db :creating-channel (:name channel))))
 
 (register-handler
-  :created-channel
-  [trim-v
-    (after (fn [db [message]] (dispatch [:join-channel message])))]
-  (fn [db [message]]
-    (update db :channels assoc (:id message) (assoc message :queue []))))
+ :created-channel
+ [trim-v
+  (after (fn [db [created-channel]] (dispatch [:join-channel created-channel])))]
+ (fn [db [created-channel]]
+   (update db :channels assoc (:id created-channel) (assoc created-channel :queue []
+                                                                           :messages (vec (:messages created-channel))))))
 
 (register-handler
  :join-channel

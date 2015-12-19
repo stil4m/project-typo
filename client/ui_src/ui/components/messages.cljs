@@ -12,7 +12,7 @@
    "_"
    (filter
     #(not (nil? %))
-    [(:client-id message) (:server-id message) (:time message)])))
+    [(:client-id message) (:id message) (:time message)])))
 
 (defn message-list
   [messages]

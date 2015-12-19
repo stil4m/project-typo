@@ -1,5 +1,6 @@
 (ns ui.main.transitions
-  (:require [cljs-uuid-utils.core :as uuid]))
+  (:require [cljs-uuid-utils.core :as uuid]
+            [adzerk.cljs-console :as log :include-macros true]))
 
 
 (defn leave-channel
@@ -21,7 +22,7 @@
              [:channels (:current-channel db)]
              (fn [channel]
                (-> (dissoc channel :current-message)
-                   (update :queue conj {:client-id (uuid/make-random-uuid)
+                   (update :queue conj {:client-id (str (uuid/make-random-uuid))
                                         :user (get-in db [:user :username])
                                         :body message-body})))))
 
@@ -34,13 +35,13 @@
     (update channel :unread inc)))
 
 (defn add-message-to-channel-messages
-  [channel]
-  (update channel :messages conj))
+  [message channel]
+  (update channel :messages conj message))
 
 (defn remove-message-from-channel-queue
   [message channel]
   (assoc channel :queue (filterv
-                         #(not= (:id %) (:client-id message))
+                         #(not= (:client-id %) (:client-id message))
                          (:queue channel))))
 
 (defn received-message
@@ -48,5 +49,5 @@
   (update-in db [:channels (:channel message)]
              (fn [target-channel]
                (->> (increase-unread-when-not-active db target-channel)
-                    (add-message-to-channel-messages)
+                    (add-message-to-channel-messages message)
                     (remove-message-from-channel-queue message)))))
