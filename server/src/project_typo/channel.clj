@@ -18,7 +18,6 @@
 
 (defn- list-channels [conn]
   (-> (r/table constants/channels-table)
-      (r/all)
       (r/run conn)))
 
 (defprotocol Channel
