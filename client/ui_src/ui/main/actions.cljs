@@ -2,6 +2,13 @@
   (:require [re-frame.core :refer [dispatch]]
             [ui.util.events :as util]))
 
+(defn leave-room
+  [room]
+  (fn [e]
+    (.preventDefault e)
+    (.stopPropagation e)
+    (dispatch [:leave-room room])))
+
 (defn join-room
   [room]
   (fn [e]

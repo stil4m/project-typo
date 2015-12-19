@@ -20,17 +20,24 @@
 
 (defn perform-room-join
   [db [room-info]]
-  (if (contains? (:open-rooms db) (:id (:joining-room db)))
+  (if (contains? (set (:open-rooms db)) (:id (:joining-room db)))
     (dispatch [:joined-room room-info])
     (do
       (log/info "TODO | Join ROOM:")
       (log/info "TODO | - room ~{(:id room-info)}")
       (dispatch [:joined-room room-info]))))
 
+(defn perform-room-leave
+  [db [room]]
+  (log/info "TODO | Leave ROOM:")
+  (log/info "TODO | - room ~{(:id room)}"))
+
 (defn set-as-current-room-and-add-to-open
   [db room]
-  (-> (assoc db :current-room (:id room))
-      (assoc :open-rooms (conj (:open-rooms db) (:id room)))))
+  (let [db-with-current (assoc db :current-room (:id room))]
+    (if (contains? (set (:open-rooms db-with-current)) (:id room))
+      db-with-current
+      (assoc db-with-current :open-rooms (conj (:open-rooms db-with-current) (:id room))))))
 
 (register-handler
  :set-active-room
@@ -69,3 +76,12 @@
  [trim-v]
  (fn [db [room]]
    (set-as-current-room-and-add-to-open db room)))
+
+(register-handler
+ :leave-room
+ [trim-v
+  (after perform-room-leave)]
+ (fn [db [room]]
+   (assoc db :current-room (when (not= (:id room) (:current-room db))
+                             (:current-room db))
+             :open-rooms (filter #(not= % (:id room)) (:open-rooms db)))))

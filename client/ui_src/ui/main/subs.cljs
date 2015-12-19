@@ -18,8 +18,8 @@
  (fn [db]
    (let [room-list (subscribe [:room-list])
          open-rooms (subscribe [:open-rooms])]
-     (reaction {:joinable (filter #(not (contains? @open-rooms (:id %))) @room-list)
-                :joined (filter #(contains? @open-rooms (:id %)) @room-list)}))))
+     (reaction {:joinable (filter #(not (contains? (set @open-rooms) (:id %))) @room-list)
+                :joined (map #(get-in @db [:rooms %]) @open-rooms)}))))
 
 (register-sub
  :current-room

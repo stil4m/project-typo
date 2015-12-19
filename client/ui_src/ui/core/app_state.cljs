@@ -17,8 +17,8 @@
             {:id "maaarts" :full-name "Maarten Arts" :status :online}
             {:id "guest1234" :full-name "Philip Geubels" :status :online}]
    :current-room "room3"
-   :open-rooms #{"room1"
-                 "room3"}
+   :open-rooms ["room1"
+                "room3"]
    :message-queue []
    :rooms {"room1" {:id "room1"
                     :name "Just Jokes"

@@ -19,12 +19,14 @@
    [:h1.title "Version: 0.1.0"]])
 
 (defn chats-sidebar-pane-room
-  [active-converstation action room]
+  [active-converstation action closable room]
   [:li.list-group-item
    {:key (:id room)
     :on-click (action room)
     :class (when (= (:id active-converstation) (:id room))
              "active")}
+   (when closable [:a.dismiss-room.pull-right {:on-click (actions/leave-room room)}
+                   [:span.icon.icon-cancel]])
    [:img.img-circle.media-object.pull-left {:width "32px" :height "32px"}]
    [:div.media-body
     [:strong (:name room)]
@@ -38,10 +40,10 @@
     (when (seq (:joinable rooms-state))
       [:li.list-group-header [:strong "Joinable:"]])
     (doall
-     (map (partial chats-sidebar-pane-room active-converstation actions/join-room) (:joinable rooms-state)))
+     (map (partial chats-sidebar-pane-room active-converstation actions/join-room false) (:joinable rooms-state)))
     [:li.list-group-header [:strong "Joined:"]]
     (doall
-     (map (partial chats-sidebar-pane-room active-converstation actions/select-room) (:joined rooms-state)))]])
+     (map (partial chats-sidebar-pane-room active-converstation actions/select-room true) (:joined rooms-state)))]])
 
 (defn chat-message-pane
   [current-room]
@@ -85,7 +87,8 @@
        [:div.window-content
         [:div.pane-group
          [chats-sidebar-pane @current-room @rooms-state]
-         [:div.messages-container.pane
-          [chat-message-pane @current-room]
-          [message-input @current-room]]]]
+         (when @current-room
+           [:div.messages-container.pane
+            [chat-message-pane @current-room]
+            [message-input @current-room]])]]
        [footer]])))
