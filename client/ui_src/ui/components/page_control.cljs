@@ -1,4 +1,4 @@
-(ns ui.component.page-control
+(ns ui.components.page-control
   (:require [ui.util.routing :as routing]))
 
 (defn history-btn-group

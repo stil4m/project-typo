@@ -30,16 +30,20 @@
                              "tomtheun"
                              "maaarts"
                              "guest1234"]
-                    :messages [{:user "guest1234"
+                    :messages [{:id 11
+                                :user "guest1234"
                                 :time 1450041030000
                                 :body "Weet je hoe ze een stalker noemen met ski-stokken?"}
-                               {:user "mitkuijp"
+                               {:id 12
+                                :user "mitkuijp"
                                 :time 1450041040000
                                 :body "Wat dan flip?"}
-                               {:user "guest1234"
+                               {:id 13
+                                :user "guest1234"
                                 :time 1450041050000
                                 :body "Een Nordic Stalker."}
-                               {:user "tomtheun"
+                               {:id 14
+                                :user "tomtheun"
                                 :time 1450041060000
                                 :body "Classic :p"}]}
            "room2" {:id "room2"
@@ -49,7 +53,8 @@
                     :people ["matstijl"
                              "tomtheun"
                              "maaarts"]
-                    :messages [{:user "matstijl"
+                    :messages [{:id 21
+                                :user "matstijl"
                                 :time 1450041030000
                                 :body "Anyone there!?"}]}
            "room3" {:id "room3"
@@ -60,48 +65,63 @@
                              "mitkuijp"
                              "tomtheun"
                              "maaarts"]
-                    :messages [{:user "tomtheun"
+                    :messages [{:id 31
+                                :user "tomtheun"
                                 :body "Hi"
                                 :time 1450041030000}
-                               {:user "mitkuijp"
+                               {:id 32
+                                :user "mitkuijp"
                                 :body "Morning, had a good sleep?"
                                 :time 1450041040000}
-                               {:user "tomtheun"
+                               {:id 33
+                                :user "tomtheun"
                                 :body "Do you know where @stil4m is?"
                                 :time 1450041050000}
-                               {:user "stil4m"
+                               {:id 34
+                                :user "stil4m"
                                 :body "Here I am"
                                 :time 1450041060000}
-                               {:user "stil4m"
+                               {:id 35
+                                :user "stil4m"
                                 :body "Sorry I am late"
                                 :time 1450041070000}
-                               {:user "mitkuijp"
+                               {:id 36
+                                :user "mitkuijp"
                                 :body "Always the same song :p"
                                 :time 1450041080000}
-                               {:user "tomtheun"
+                               {:id 37
+                                :user "tomtheun"
                                 :body "Ok guys, lets get to it. The plan for today is to build an awesome chat client. I hope you have brought your pyjamas, because it is going to be a long weekend."
                                 :time 1450041090000}
-                               {:user "stil4m"
+                               {:id 38
+                                :user "stil4m"
                                 :body "Got them with me"
                                 :time 1450041100000}
-                               {:user "mitkuijp"
+                               {:id 39
+                                :user "mitkuijp"
                                 :body "Yes"
                                 :time 1450041110000}
-                               {:user "tomtheun"
+                               {:id 310
+                                :user "tomtheun"
                                 :body "Who wants (beer)?"
                                 :time 1450041120000}
-                               {:user "stil4m"
+                               {:id 311
+                                :user "stil4m"
                                 :body "(areyoukiddingme)"
                                 :time 1450041130000}
-                               {:user "mitkuijp"
+                               {:id 312
+                                :user "mitkuijp"
                                 :body "Yep"
                                 :time 1450041140000}
-                               {:user "mitkujp"
+                               {:id 313
+                                :user "mitkujp"
                                 :body "s/Yep/Yes"
                                 :time 1450041150000}
-                               {:user "stil4m"
+                               {:id 314
+                                :user "stil4m"
                                 :body "Ok, I'll will also have one, but only one."
                                 :time 1450041160000}
-                               {:user "tomtheun"
+                               {:id 315
+                                :user "tomtheun"
                                 :body "3 beers coming up"
                                 :time 1450041170000}]}}})

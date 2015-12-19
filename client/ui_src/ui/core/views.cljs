@@ -1,6 +1,5 @@
 (ns ui.core.views
   (:require [re-frame.core :refer [subscribe]]
-            [ui.settings.view :as settings]
             [ui.main.view :as main]
             [ui.login.views :as login]
             [ui.core.routes :as routes]
@@ -8,7 +7,6 @@
 
 (defmulti views identity)
 
-(defmethod views :settings [_] settings/render)
 (defmethod views :main [_] main/render)
 (defmethod views :login [_] login/render)
 

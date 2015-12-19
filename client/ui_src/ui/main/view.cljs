@@ -2,8 +2,9 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [ui.core.routes :as routes]
             [ui.main.actions :as actions]
-            [ui.component.page-control :as page-control]
-            [ui.util.routing :as routing]))
+            [ui.components.page-control :as page-control]
+            [ui.util.routing :as routing]
+            [ui.components.messages :as messages]))
 
 (defn message->list-item
   [message]
@@ -65,30 +66,56 @@
                 :value (:current-message conversatation)
                 :placeholder "Type your message here"}]]])
 
+(defn room-list
+  [title items]
+  (into
+   [:ul.mb3.px1 {:style {:list-style :none}}
+    [:li [:h1.h6.px1.caps.light-blue.muted title]]]
+   (doall (map
+           (fn [item]
+             [:li.lh2.h5.flex.px1.rounded.px1.mb05 {:key (:id item)
+                                                    :class (when (:active item) "bg-dark-overlay")
+                                                    :on-click (actions/select-room item)}
+              [:span.status [:i.material-icons
+                             {:class (if (pos? (:unread item))
+                                       "orange"
+                                       "white")}
+                             "lens"]]
+              [:span.flex-auto.px1.truncate.light-blue (:name item)]
+              [:span.unread-messages.light-blue.muted.col-3.right-align (when (pos? (:unread item)) (:unread item))]])
+           items))))
+
+(defn contacts-side-bar
+  [channels-state]
+  [:nav.flex.flex-none.flex-column.contacts-sidebar.bg-dark-blue
+   [:div.flex-auto.mt6
+    (when (seq (:rooms channels-state))
+      [room-list "Rooms"
+       (:rooms channels-state)])
+    (when (seq (:people channels-state))
+      [room-list "People"
+       (:people channels-state)])]
+   [:div.user-menu.h4.lh4.px2.flex
+    [:span [:i.material-icons.flex-center {:class "green"} "lens"]]
+    [:span.name.px1.light-blue.flex-center "Maarten Arts"]
+    [:span.options.light-blue.flex-center [:i.material-icons.grey "keyboard_arrow_down"]]]])
+
+(defn message-panel
+  [current-room]
+  [:div.content.flex-auto.flex.flex-column.bg-white
+   [:div.py2.bg-gray.bg-light-gray.flex.border-top.border-bottom.border-color-silver
+    [:h1.h2.regular.flex-auto.dark-gray.m0.ml3 (:name current-room)]
+    [:div.flex-none.mr2.flex.flex-column
+     [:i.material-icons.dark-gray.flex-center.flex-none "search"]]]
+   [messages/message-list (:messages current-room)]
+   [messages/message-box]])
 (defn render
   []
   (let [route (subscribe [:route-state])
         current-room (subscribe [:current-room])
-        rooms-state (subscribe [:rooms-state])]
+        channels-state (subscribe [:channels-state])]
     (fn []
-      [:div.window
-       [:div.toolbar.toolbar-header
-        [:h1.title "Main"]
-        [:div.toolbar-actions
-         [page-control/history-btn-group @route]
-         [:button.btn.btn-default.pull-right
-          {:on-click (routing/set-route-fn routes/login)}   ;TODO Should have logout action
-          [:span.icon.icon-logout.icon-text]
-          "Logout"]
-         [:button.btn.btn-default.pull-right
-          {:on-click (routing/nav-to-route-fn routes/settings)}
-          [:span.icon.icon-cog.icon-text]
-          "Settings"]]]
-       [:div.window-content
-        [:div.pane-group
-         [chats-sidebar-pane @current-room @rooms-state]
-         (when @current-room
-           [:div.messages-container.pane
-            [chat-message-pane @current-room]
-            [message-input @current-room]])]]
-       [footer]])))
+      [:div.window.flex.flex-row
+       [contacts-side-bar @channels-state]
+       [message-panel @current-room]
+       [:aside.flex.flex-none.operations-sidebar.bg-light-gray.border-left.border-color-silver]])))

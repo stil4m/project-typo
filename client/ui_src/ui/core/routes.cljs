@@ -14,8 +14,3 @@
   {:view [:main]
    :params params
    :query-params (:query-params params)})
-
-(defroute settings "/settings" {:as params}
-  {:view [:settings]
-   :params params
-   :query-params (:query-params params)})
