@@ -1,4 +1,4 @@
-(ns ui.core.schema
+(ns ui.schema.app-state
   (:require [schema.core :as s]))
 
 (def ValidBody
