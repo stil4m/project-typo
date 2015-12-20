@@ -3,6 +3,7 @@
   (:require [adzerk.cljs-console :as log :include-macros true]
             [clojure.string :as string]
             [ui.util.time :as time]
+            [ui.components.avatar :refer [avatar]]
             [cljs.core.async :as async :refer [>! <! put! chan alts! timeout]]))
 
 (defn- debounce [in ms]
@@ -15,10 +16,6 @@
           timer (do (>! out val) (recur nil))
           in (recur new-val))))
     out))
-
-(defn message-avatar
-  []
-  [:div.flex-none.circle.border.border-color-dark-gray.mr2.ml2.bg-light-gray {:style {:height "32px" :width "32px"}}])
 
 (defn message->key
   [message]
@@ -57,7 +54,7 @@
                         {:key (message->key message)
                          :class (when (even? i) "bg-light-gray border border-color-light-silver")}
                         [:div.flex
-                         [message-avatar]
+                         [avatar]
                          [:div.flex-auto
                           [:div.flex
                            [:div.dark-gray.bold.lh7-8.capitalize (:user message)]

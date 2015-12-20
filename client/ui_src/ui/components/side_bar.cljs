@@ -1,7 +1,7 @@
 (ns ui.components.side-bar
-  (:require [ui.main.actions :as actions]
-            [ui.util.routing :as route-util]
-            [re-frame.core :refer [dispatch]]))
+  (:require [ui.util.routing :as route-util]
+            [re-frame.core :refer [dispatch]]
+            [ui.core.routes :as routes]))
 
 (defn create-channel
   [name]
