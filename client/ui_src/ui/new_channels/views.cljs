@@ -14,10 +14,10 @@
     :status :available}
    {:username "matstijl"
     :full-name "Mats Stijlaart"
-    :status :available}
+    :status :busy}
    {:username "matstijl"
     :full-name "Mats Stijlaart"
-    :status :available}
+    :status :offline}
    {:username "matstijl"
     :full-name "Mats Stijlaart"
     :status :available}
@@ -56,16 +56,17 @@
   [status]
   (case status
     :available [:span.green "Available"]
-    :busy [:span.red "Busy"]
+    :busy [:span.dark-orange "Busy"]
     :offline [:span.gray.muted "Offline"]))
 
 (defn participants-text
   [n]
-  [:span..muted.light (str n " participants")])
+  [:span.muted.light (str n " participants")])
 
 (defn person-item
   [person]
   [:div.flex.m05.p1.rounded.hover-bg-light-gray.hover-border.hover-border-color-silver.hover-border.pointer
+   {:on-click (actions/select-person person)}
    [avatar]
    [:div.flex-auto
     [:div.flex.flex-column
@@ -75,6 +76,7 @@
 (defn room-item
   [room]
   [:div.flex.m05.p1.rounded.hover-bg-light-gray.hover-border.hover-border-color-silver.hover-border.pointer
+   {:on-click (actions/select-room room)}
    [avatar]
    [:div.flex-auto
     [:div.flex.flex-column
@@ -84,25 +86,17 @@
 (defn tab-header
   [title]
   [:div.border-bottom.bottom-color-silver.mb1
-   [:h2.h4.caps.dark-gray {:style {:letter-spacing ".5px"}} title]])
+   [:h2.h4.regular.caps.dark-gray {:style {:letter-spacing ".5px"}} title]])
 
 (defn people-tab
   [people]
   [:div.col-6.left
-   [:div.px2
-    [tab-header "People"]
-    [:div.col-6.left
-     [person-item {:username "matstijl"
-                   :full-name "Mats Stijlaart"
-                   :status :available}]]
-    [:div.col-6.left
-     [person-item {:username "matstijl"
-                   :full-name "Mats Stijlaart"
-                   :status :available}]]
-    [:div.col-6.left
-     [person-item {:username "matstijl"
-                   :full-name "Mats Stijlaart"
-                   :status :available}]]]])
+   (into [:div.px2 [tab-header "People"]]
+         (mapv
+          (fn [person]
+            [:div.col-6.left
+             [person-item person]])
+          people))])
 
 (defn rooms-tab
   [rooms]
@@ -132,10 +126,15 @@
         [:div.col-6
          [:div.px2
           [:div.col-6.left
-           [:h1.h2.inline.col-2.dark-gray "New chat"]]
-          [:div.col-6.left.flex
-           [:input.col-4.flex-auto {:type :text
-                          :placeholder "Search people & rooms"}]]]]]
+           [:h1.h2.regular.inline.col-2.dark-gray "New chat"]]
+          [:div.col-6.left
+           [:div.flex.relative
+            [:i.input-icon.material-icons.py1.absolute.gray.mute.ml1 "search"]
+            [:input.col-4.flex-auto.border.border-color-silver.rounded
+             {:type :text
+              :style {:padding-left "40px;"}
+              :on-change actions/change-channel-filter
+              :placeholder "Search people & rooms"}]]]]]]
        [:div.flex-auto
         [:div.mt2
          [people-tab people]

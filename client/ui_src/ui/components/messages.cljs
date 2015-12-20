@@ -53,7 +53,7 @@
                        [:div.h4.py1.mb1.py2.rounded
                         {:key (message->key message)
                          :class (when (even? i) "bg-light-gray border border-color-light-silver")}
-                        [:div.flex
+                        [:div.flex.px1
                          [avatar]
                          [:div.flex-auto
                           [:div.flex
@@ -62,5 +62,5 @@
                             (if (nil? (:time message))
                               "Sending..."
                               (time/timestamp->time (:time message)))]]
-                          [:div.mt0.mr2.gray (:body message)]]]])
+                          [:div.mt0.gray (:body message)]]]])
                      messages)))])))
