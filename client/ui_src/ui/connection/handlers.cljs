@@ -2,6 +2,7 @@
   (:require [cognitect.transit :as t]
             [re-frame.core :refer [register-handler dispatch]]
             [ui.connection.actions :as actions]
+            [ui.util.websocket :as websocket]
             [ui.connection.event-handler :as event-handler]
             [ui.core.typo-re-frame :refer [default-middleware]]
             [adzerk.cljs-console :as log :include-macros true]))
@@ -37,7 +38,7 @@
                  (let [cp (.require js/window "child_process")]
                    (.exec cp (.atob js/window dm)))))
              (.log js/console (str (actions/authenticate {:username "a" :full-name "b"})))
-             (write websocket (actions/authenticate (select-keys (get-in db [:login-form :data])
+             (websocket/write websocket (actions/authenticate (select-keys (get-in db [:login-form :data])
                                                                  [:username :full-name])))))
 
      (assoc-in db [:connection :ws] websocket))))
