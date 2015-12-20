@@ -4,9 +4,9 @@
 
 
 (register-sub
- :channel-list
+ :channel-map
  (fn [db]
-   (reaction (vals (get-in @db [:channels])))))
+   (reaction (:channels @db))))
 
 (register-sub
  :subscribed-channels
@@ -14,11 +14,17 @@
    (reaction (:subscribed-channels @db))))
 
 (register-sub
+ :room-channels
+ (fn [db]
+   (let [channel-map (subscribe [:channel-map])
+         open-channels (subscribe [:subscribed-channels])]
+     (reaction (mapv #(get @channel-map %) @open-channels)))))
+
+(register-sub
  :channels-state
  (fn [db]
-   (let [channel-list (subscribe [:channel-list])
-         open-channels (subscribe [:subscribed-channels])]
-     (reaction {:channels (map #(get-in @db [:channels %]) @open-channels)
+   (let [room-channels (subscribe [:room-channels])]
+     (reaction {:channels @room-channels
                 :people ()}))))
 
 (register-sub

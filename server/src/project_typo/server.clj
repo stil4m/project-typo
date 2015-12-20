@@ -31,7 +31,7 @@
                                  {:keys [channel]}]
   (s/connect
    (bus/subscribe event-bus channel)
-   (s/buffer 100 conn)
+   conn
    {:timeout 1e4})
   (bus/publish! event-bus channel (encode-message
                                    {:most-recent-messages (messages/most-recent message-service channel 100)
@@ -105,7 +105,7 @@
                 ;; Start Heartbeat
                 (s/connect
                  (s/periodically 10000 #(encode-message {:event :heartbeat}))
-                 (s/buffer 100 conn)
+                 conn #_(s/buffer 100 conn)
                  {:timeout 1e4})
 
                 ;; Consume messsages from connected client

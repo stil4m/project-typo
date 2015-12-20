@@ -18,7 +18,8 @@
 
 (defn set-as-current-channel
   [db [channel]]
-  (assoc db :current-channel (:id channel)))
+  (-> (assoc db :current-channel (:id channel))
+      (assoc-in [:channels (:id channel) :unread] 0)))
 
 (defn add-current-message-to-queue
   [db [message-body]]

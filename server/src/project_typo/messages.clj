@@ -19,7 +19,7 @@
 
 (defn- most-recent-messages [{:keys [db]} channel amount]
   (-> (r/table constants/messages-table)
-      (r/filter (r/fn [row] (r/eq (r/get-field "channel") channel)))
+      (r/filter (r/fn [row] (r/eq (r/get-field row "channel") channel)))
       (r/order-by "time")
       (r/limit amount)
       (r/run (db/connect db))))
