@@ -23,7 +23,7 @@
   (let [res (channel/create channel-service {:name (get-in msg [:data :name])})]
     (log/info "created channel" res)
     (s/put! conn (encode-message {:event :channel-created
-                                  :data {:created-channel res}}))))
+                                  :data res}))))
 
 (defmethod action :join-channel join-channel [{:keys [subscriptions conn]}
                                  {:keys [event-bus message-service]}
