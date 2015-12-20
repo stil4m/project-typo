@@ -1,26 +1,22 @@
 (ns ui.core.schema
   (:require [schema.core :as s]))
 
-; Message
-; Queued Message
-; Create Message
-
-;Login Form
-; Channel
+(def ValidBody
+  #"[^\\s]")
 
 (def PersistedMessage
   "A schema for the message that was broadcased by the server"
-  {(s/required-key :channel-id) s/Str
-   (s/required-key :client-id) s/Str
-   (s/required-key :id) s/Str
-   (s/required-key :time) js/Date
-   (s/required-key :user) s/Str
-   (s/required-key :body) s/Str})
+  {:channel s/Str
+   :client-id s/Str
+   :id s/Str
+   :time js/Date
+   :user s/Str
+   :body ValidBody})
 
 (def QueuedMessage
   "A schema for the message that was was send "
-  {(s/required-key :body) s/Str
-   (s/required-key :client-id) s/Str})
+  {:body ValidBody
+   :client-id s/Str})
 
 (def ServerConnection
   {:ws (s/maybe s/Any)
@@ -38,11 +34,19 @@
    :history [s/Any]
    :future [s/Any]})
 
+(def Channel
+  {:id s/Str
+   :name s/Str
+   :unread s/Int
+   :messages [PersistedMessage]
+   (s/optional-key :current-message) (s/maybe s/Str)
+   :queue [QueuedMessage]})
+
 (def Channels
-  {})
+  {s/Str Channel})
 
 (def Status
-  (s/enum :online :offline :busy))
+  (s/enum :available :offline :busy))
 
 (def CurrentUser
   {:username s/Str
@@ -55,11 +59,11 @@
    :status Status})
 
 (def AppState
-  {(s/required-key :connection) ServerConnection
-   (s/required-key :login-form) LoginForm
-   (s/required-key :user) (s/maybe CurrentUser)
-   (s/required-key :people) [Person]
-   (s/required-key :route) Route
-   (s/required-key :open-channels) [s/Str]
+  {:connection ServerConnection
+   :login-form LoginForm
+   :user (s/maybe CurrentUser)
+   :people [Person]
+   :route Route
+   :subscribed-channels [s/Str]
    :current-channel (s/maybe s/Str)
-   (s/required-key :channels) Channels})
+   :channels Channels})

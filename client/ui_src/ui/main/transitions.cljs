@@ -8,14 +8,17 @@
   [db [channel]]
   (assoc db :current-channel (when (not= (:id channel) (:current-channel db))
                                (:current-channel db))
-            :open-channels (vec (filter #(not= % (:id channel)) (:open-channels db)))))
+            :subscribed-channels (vec (filter #(not= % (:id channel)) (:subscribed-channels db)))))
 
-(defn set-as-current-channel-and-add-to-open
+(defn add-to-subscribed-channels
+  [db channel-id]
+  (if (contains? (set (:subscribed-channels db)) channel-id)
+    db
+    (assoc db :subscribed-channels (conj (vec (:subscribed-channels db)) channel-id))))
+
+(defn set-as-current-channel
   [db [channel]]
-  (let [db-with-current (assoc db :current-channel (:id channel))]
-    (if (contains? (set (:open-channels db-with-current)) (:id channel))
-      db-with-current
-      (assoc db-with-current :open-channels (conj (:open-channels db-with-current) (:id channel))))))
+  (assoc db :current-channel (:id channel)))
 
 (defn add-current-message-to-queue
   [db [message-body]]
@@ -53,13 +56,27 @@
 
 (defn enrich-channel
   [channel]
-  (assoc channel :queue (vec (:queue channel))
+  (assoc channel :unread (max (:unread channel) 0)
+                 :queue (vec (:queue channel))
                  :messages (vec (:messages channel))))
 
 (defn add-created-channel
   [db [created-channel]]
   (update db :channels assoc (:id created-channel) (enrich-channel created-channel)))
 
+
+(defn add-recent-messages
+  [db most-recent-messages channel]
+  (if (nil? (get-in db [:channels channel]))
+    db
+    (assoc-in db [:channels channel :messages] most-recent-messages)))
+
+(defn joined-channel
+  [db [{:keys [channel most-recent-messages]}]]
+  (-> (add-to-subscribed-channels db channel)
+      (add-recent-messages most-recent-messages channel)))
+
 (defn update-channels
   [db [channels]]
+  (.log js/console "BEFORE")
   (assoc db :channels (into {} (map #(vector (:id %) (enrich-channel %)) channels))))

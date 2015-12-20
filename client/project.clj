@@ -1,6 +1,5 @@
 (defproject hello-electron "0.1.0-SNAPSHOT"
   :source-paths ["src"]
-  :description "A hello world application for electron"
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.clojure/clojurescript "1.7.189"]
                  [figwheel "0.5.0-2"]
@@ -12,7 +11,8 @@
                  [com.andrewmcveigh/cljs-time "0.3.14"]
                  [com.lucasbradstreet/cljs-uuid-utils "1.0.2"]
                  [prismatic/schema "1.0.4"]
-                 [com.cognitect/transit-cljs "0.8.232"]]
+                 [com.cognitect/transit-cljs "0.8.232"]
+                 [org.clojure/core.async "0.2.374"]]
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-2"]
             [lein-less "1.7.5"]]

@@ -27,7 +27,7 @@
  :authentication-complete
  [default-middleware
   (path [:login-form])
-  (after (fn [login-form] (dispatch [:login-success (assoc (:data login-form) :status :online)])))]
+  (after (fn [login-form] (dispatch [:login-success (assoc (:data login-form) :status :available)])))]
  (fn [db]
    (assoc db :authenticating false)))
 
@@ -43,7 +43,8 @@
  :login-success
  [default-middleware
   (path [:user])
-  (after (routing/set-route-fn routes/main))]
+  (after (routing/set-route-fn routes/main))
+  (after #(dispatch [:fetch-all-channels]))]
  (fn [_ [user]]
    user))
 
@@ -53,7 +54,7 @@
   (after #(dispatch [:connect-to-server]))]
  identity)                                                  ;TODO
 
-(register-handler
+  (register-handler
  :login-submission-data-invalid
  (fn [db]
    ;TODO UNSET LOADING

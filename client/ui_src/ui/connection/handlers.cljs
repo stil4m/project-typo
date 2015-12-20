@@ -5,25 +5,29 @@
             [adzerk.cljs-console :as log :include-macros true]))
 
 (defn write [websocket message]
-  (log/debug "Sending message ~{message}")
+  ;(log/debug "Sending message ~{message}")
   (let [w (t/writer :json)]
     (.send websocket (t/write w message))))
 
 (defn read [message]
   (let [r (t/reader :json)
         message (t/read r message)]
-    (log/debug "Received message ~{message}")
+    ;(log/debug "Received message ~{message}")
     message))
 
 (defmulti event (fn [message] (:event message)))
 
 (defmethod event :channel-created [message]
-  (log/info "Created channel ~{message}")
+  ;(log/info "Created channel ~{message}")
   (dispatch [:created-channel (:created-channel message)]))
+
+(defmethod event :joined-channel [message]
+  (log/info "Server event :joined-channel | ~{(:channel message)}")
+  (dispatch [:joined-channel (dissoc message :event)]))
 
 (defmethod event :new-message [message]
   (log/info "Received message ~{message}")
-  (dispatch [:received-message message]))
+  (dispatch [:received-message (dissoc message :event)]))
 
 (defmethod event :all-channels [message]
   (dispatch [:fetched-all-channels (:channels message)]))

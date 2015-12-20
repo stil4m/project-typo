@@ -2,7 +2,6 @@
   (:require [aleph.http :as http]
             [byte-streams :as bs]
             [clojure.tools.logging :as log]
-            [cognitect.transit :as transit]
             [com.stuartsierra.component :as component]
             [environ.core :refer [env]]
             [manifold.bus :as bus]
@@ -11,35 +10,11 @@
             [manifold.stream :as stream]
             [project-typo.channel :as channel]
             [project-typo.messages :as messages]
+            [project-typo.transit :refer [decode-message encode-message]]
             [rethinkdb.query :as r]
             [clj-time.coerce :as coerce])
   (:import [java.io ByteArrayInputStream ByteArrayOutputStream]))
 
-(def ^:private joda-time-verbose-handler
-  (transit/write-handler
-   (constantly "t")
-   (fn [v] (-> v coerce/to-date .getTime))
-   (fn [v] (coerce/to-string v))))
-
-(def ^:private joda-time-handler
-  (transit/write-handler
-   (constantly "m")
-   (fn [v] (-> v coerce/to-date .getTime))
-   (fn [v] (-> v coerce/to-date .getTime .toString))
-   joda-time-verbose-handler))
-
-(def custom-transit-handlers {org.joda.time.DateTime joda-time-handler})
-
-(defn decode-message [msg]
-  (let [in (ByteArrayInputStream. (.getBytes msg))
-        reader (transit/reader in :json)]
-    (transit/read reader)))
-
-(defn encode-message [msg]
-  (let [out (ByteArrayOutputStream. 4096)
-        writer (transit/writer out :json {:handlers custom-transit-handlers})]
-    (transit/write writer msg)
-    (.toString out)))
 
 (defmulti action (fn [conn component m] (:action m)))
 
@@ -56,7 +31,8 @@
                                  {:keys [channel]}]
   (s/connect
    (bus/subscribe event-bus channel)
-   conn)
+   (s/buffer 100 conn)
+   {:timeout 1e4})
   (bus/publish! event-bus channel (encode-message
                                    {:most-recent-messages (messages/most-recent message-service channel 100)
                                     :channel channel
@@ -129,13 +105,16 @@
                 ;; Start Heartbeat
                 (s/connect
                  (s/periodically 10000 #(encode-message {:event :heartbeat}))
-                 conn)
+                 (s/buffer 100 conn)
+                 {:timeout 1e4})
 
                 ;; Consume messsages from connected client
                 (s/consume
                  #(action context component (decode-message %))
                  (->> conn
-                      (s/buffer 100))))))
+                      (s/buffer 100)
+                      ;; Only one message per second or 10 seconds worth if they were gone for 10 seconds
+                      (s/throttle 1 10))))))
 
 (defn chat-handler
   [component req]
@@ -156,6 +135,7 @@
       (assoc component
              :instance instance
              :connections connections)))
+
   (stop [component]
     (log/info "Stopping server..")
     (when-let [instance (:instance component)]

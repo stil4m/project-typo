@@ -4,7 +4,7 @@
             [ui.components.messages :as messages]))
 
 (defn channel-list
-  [title  current-channel items]
+  [title current-channel items]
   (into
    [:ul.mb3.p0 {:style {:list-style :none}}
     [:li [:h1.h6.ml1.caps.light-blue.muted title]]]
@@ -56,14 +56,15 @@
 
 (defn message-panel
   [current-channel]
-  [:div.content.flex-auto.flex.flex-column.bg-white.pt2
-   [:div.py2.ml2.mr2.flex.border-bottom.border-color-silver
-    [:h1.h2.regular.flex-auto.dark-gray.m0.ml1 (:name current-channel)]
-    [:i.material-icons.dark-gray.px1.mt05 "search"]
-    [:i.material-icons.dark-gray.px1.mt05 "info_outline"]]
-   [messages/message-list (concat (:messages current-channel)
-                                (:queue current-channel))]
-   [message-box current-channel]])
+  (into [:div.content.flex-auto.flex.flex-column.bg-white.pt2]
+        (when current-channel
+          [[:div.py2.ml2.mr2.flex.border-bottom.border-color-silver
+            [:h1.h2.regular.flex-auto.dark-gray.m0.ml1 (:name current-channel)]
+            [:i.material-icons.dark-gray.px1.mt05 "search"]
+            [:i.material-icons.dark-gray.px1.mt05 "info_outline"]]
+           [messages/message-list (concat (:messages current-channel)
+                                          (:queue current-channel))]
+           [message-box current-channel]])))
 
 (defn render
   []
@@ -74,4 +75,4 @@
       [:div.window.flex.flex-row
        [contacts-side-bar @current-channel @channels-state]
        [message-panel @current-channel]])))
-       ;[:aside.flex.flex-none.operations-sidebar.bg-light-gray.border-left.border-color-silver]])))
+;[:aside.flex.flex-none.operations-sidebar.bg-light-gray.border-left.border-color-silver]])))

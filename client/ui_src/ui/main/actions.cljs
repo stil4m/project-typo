@@ -1,25 +1,13 @@
 (ns ui.main.actions
   (:require [re-frame.core :refer [dispatch dispatch-sync]]
-            [ui.util.events :as util]))
+            [ui.util.events :as util]
+            [clojure.string :as str]))
 
 (defn create-channel
   [name]
   (fn [e]
     (.preventDefault e)
     (dispatch [:create-channel {:name name}])))
-
-(defn leave-channel
-  [channel]
-  (fn [e]
-    (.preventDefault e)
-    (.stopPropagation e)
-    (dispatch [:leave-channel channel])))
-
-(defn join-channel
-  [channel]
-  (fn [e]
-    (.preventDefault e)
-    (dispatch [:join-channel channel])))
 
 (defn select-channel
   [channel]
@@ -32,6 +20,8 @@
   (fn
     [e]
     (when (and
+           (not (nil? message))
+           (not (str/blank? message))
            (not (.-shiftKey e))
            (= (.-key e) "Enter"))
       (do
