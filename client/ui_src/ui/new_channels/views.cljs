@@ -1,5 +1,6 @@
 (ns ui.new-channels.views
-  (:require [ui.components.avatar :refer [avatar]]))
+  (:require [ui.components.avatar :refer [avatar]]
+            [ui.new-channels.actions :as actions]))
 
 (def rooms
   [{:name "Bier drinken"
@@ -64,7 +65,7 @@
 
 (defn person-item
   [person]
-  [:div.flex.m05.p1.border.rounded.bg-light-gray
+  [:div.flex.m05.p1.rounded.hover-bg-light-gray.hover-border.hover-border-color-silver.hover-border.pointer
    [avatar]
    [:div.flex-auto
     [:div.flex.flex-column
@@ -73,7 +74,7 @@
 
 (defn room-item
   [room]
-  [:div.flex.m05.p1.border.rounded.bg-light-gray
+  [:div.flex.m05.p1.rounded.hover-bg-light-gray.hover-border.hover-border-color-silver.hover-border.pointer
    [avatar]
    [:div.flex-auto
     [:div.flex.flex-column
@@ -83,7 +84,7 @@
 (defn tab-header
   [title]
   [:div.border-bottom.bottom-color-silver.mb1
-   [:h2.h4.caps.dark-gray title]])
+   [:h2.h4.caps.dark-gray {:style {:letter-spacing ".5px"}} title]])
 
 (defn people-tab
   [people]
@@ -106,18 +107,21 @@
 (defn rooms-tab
   [rooms]
   [:div.col-6.left
+   [:button.right.px3.mr2.btn.btn-primary.pull-right.bg-dark-orange
+    {:type :submit
+     :on-click actions/create-channel}
+    "New Room"]
    (into [:div.px2 [tab-header "Rooms"]]
          (mapv
           (fn [room]
-            (.log js/console (str room))
-            [:div.col-6.left [room-item (first room)]])
+            [:div.col-6.left [room-item room]])
           rooms))])
 
 (defn render
   []
   (fn []
-    [:div.window.flex.flex-column.mt4
-     [:div.flex-none
+    [:div.window.flex.flex-column.bg-white
+     [:div.flex-none.mt4
       [:div.flex
        [:h1.h2.inline.col-2 "New chat"]
        [:input.col-4 {:type :text

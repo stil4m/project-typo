@@ -61,11 +61,12 @@
                  :unread (max (:unread channel) 0)
                  :queue (vec (:queue channel))
                  :messages (vec (:messages channel))
-                 :member (vec (:members channel))))
+                 :members (vec (:members channel))))
 
 (defn add-created-channel
   [db [created-channel]]
-  (update db :channels assoc (:id created-channel) (enrich-channel created-channel)))
+  (-> (update db :channels assoc (:id created-channel) (enrich-channel created-channel))
+      (assoc :current-channel (:id created-channel))))
 
 
 (defn add-recent-messages
