@@ -6,7 +6,8 @@
             [ui.core.typo-re-frame :refer [default-middleware]]
             [ui.util.routing :as routing]
             [ui.core.routes :as routes]
-            [ui.connection.handlers :refer [write]]))
+            [ui.connection.handlers :refer [write-action]]
+            [ui.connection.actions :as actions]))
 
 (defn validate-login-data-for-submission
   [db]
@@ -20,7 +21,7 @@
 (register-handler
  :fetch-all-channels
  [default-middleware
-  (after (fn [db] (write (get-in db [:connection :ws]) {:action :list-channels})))]
+  (after (fn [db] (write-action db {:action :list-channels})))]
  identity)
 
 (register-handler

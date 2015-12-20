@@ -34,6 +34,7 @@
             [ui.core.routes :as routes]))
 
 (enable-console-print!)
+(schema.core/set-fn-validation! true)                       ;TODO Turn me off in production
 
 (defn render
   []

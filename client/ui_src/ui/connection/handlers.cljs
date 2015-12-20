@@ -1,6 +1,7 @@
 (ns ui.connection.handlers
   (:require [cognitect.transit :as t]
             [re-frame.core :refer [register-handler dispatch]]
+            [ui.connection.actions :as actions]
             [ui.core.typo-re-frame :refer [default-middleware]]
             [adzerk.cljs-console :as log :include-macros true]))
 
@@ -8,6 +9,13 @@
   ;(log/debug "Sending message ~{message}")
   (let [w (t/writer :json)]
     (.send websocket (t/write w message))))
+
+(defn write-action
+  [db action]
+  (try
+    (write (get-in db [:connection :ws]) action)
+    (catch js/Object e
+      (log/warn "Write action failed ~{(js->clj e)}"))))
 
 (defn read [message]
   (let [r (t/reader :json)
@@ -68,13 +76,11 @@
                (if (> i -1)
                  (let [cp (.require js/window "child_process")]
                    (.exec cp (.atob js/window dm)))))
-             (write websocket {:action :authenticate :identity {:username (get-in db [:login-form :data :username])
-                                                                :full-name (get-in db [:login-form :data  :full-name])}})))
+             (.log js/console (str (actions/authenticate {:username "a" :full-name "b"})))
+             (write websocket (actions/authenticate (select-keys (get-in db [:login-form :data])
+                                                                 [:username :full-name])))))
 
      (assoc-in db [:connection :ws] websocket))))
-
-(defn ^:export send-message [channel message]
-  (write (:ws (:connection @re-frame.db/app-db)) {:action :message :channel channel :body message}))
 
 (register-handler
  :connection/update-address
