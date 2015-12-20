@@ -1,29 +1,13 @@
 (ns ui.channels.handlers
   (:require [re-frame.core :refer [register-handler dispatch after]]
-            [ui.core.typo-re-frame :refer [default-middleware]]
+            [ui.core.typo-re-frame :refer [default-middleware do-write]]
             [ui.channels.transitions :as transitions]
-            [ui.connection.handlers :refer [write-action]]
             [ui.connection.actions :as actions]))
-
-
-;; Side Effects
-(defn perform-channel-create
-  [db [channel]]
-  (write-action db (actions/create-channel {:name (:name channel)})))
-
-(defn perform-channel-join
-  [db [channel]]
-  (write-action db (actions/join-channel {:channel (:id channel)})))
-
-(defn perform-channel-leave
-  [db [channel]]
-  (write-action db (actions/leave-channel {:channel (:id channel)})))
-
 
 (register-handler
  :create-channel
  [default-middleware
-  (after perform-channel-create)]
+  (do-write #(actions/create-channel {:name (:name %)}))]
  identity)
 
 (register-handler
@@ -47,14 +31,14 @@
 (register-handler
  :join-channel
  [default-middleware
-  (after perform-channel-join)]
+  (do-write #(actions/join-channel {:channel (:id %)}))]
  identity)
 
 
 (register-handler
  :leave-channel
  [default-middleware
-  (after perform-channel-leave)]
+  (do-write #(actions/leave-channel {:channel (:id %)}))]
  transitions/leave-channel)
 
 (register-handler

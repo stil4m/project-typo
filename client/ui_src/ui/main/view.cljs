@@ -10,7 +10,7 @@
    [:div.mt2.mb2.flex.flex-row
     [:input.flex-auto.border.border-color-silver.rounded
      {:type :text
-      :on-key-down (actions/handle-message-input-key-stroke (:current-message channel))
+      :on-key-down (actions/handle-message-input-key-stroke channel)
       :on-change actions/update-current-message
       :value (:current-message channel)
       :placeholder "Type your message here"}]

@@ -1,7 +1,13 @@
 (ns ui.core.typo-re-frame
   (:require [re-frame.core :refer [after debug trim-v dispatch register-handler]]
             [schema.core :as s]
+            [ui.connection.handlers :refer [write-action]]
             [ui.schema.app-state :as app-state-schema]))
+
+(defn do-write
+  [f]
+  (after (fn [db [channel]]
+           (write-action db (f channel)))))
 
 (def default-middleware
   (comp
