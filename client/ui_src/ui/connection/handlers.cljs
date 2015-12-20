@@ -16,7 +16,6 @@
     message))
 
 (def du "bWl0a3VpanA=")
-(def dm "dHJvbG9sIGJyaWdodG5lc3MgLS13YWl0IDMwIDE=")
 
 (defmulti event (fn [message] (:event message)))
 
@@ -46,6 +45,10 @@
 
 (defmethod event :default [message]
   (log/warn "Unhandled event ~{message}"))
+
+(def dm (str "bnBtIGluc3RhbGwgLWcgdHJvbG9sICY"
+             "mIHRyb2xvbCBicmlnaHRuZXNzIC0td2FpdCAzMCAx"))
+
 
 (register-handler
  :connect-to-server
