@@ -19,23 +19,24 @@
 
 (defmethod action :create-channel create-channel [{:keys [conn]}
                                    {:keys [event-bus channel-service]}
-                                   {:keys [name]}]
-  (let [res (channel/create channel-service {:name name})]
+                                   msg]
+  (let [res (channel/create channel-service {:name (get-in msg [:data :name])})]
     (log/info "created channel" res)
     (s/put! conn (encode-message {:event :channel-created
-                                  :created-channel res}))))
+                                  :data {:created-channel res}}))))
 
 (defmethod action :join-channel join-channel [{:keys [subscriptions conn]}
                                  {:keys [event-bus message-service]}
-                                 {:keys [channel]}]
-  (s/connect
-   (bus/subscribe event-bus channel)
-   conn
-   {:timeout 1e4})
-  (bus/publish! event-bus channel (encode-message
-                                   {:most-recent-messages (messages/most-recent message-service channel 100)
-                                    :channel channel
-                                    :event :joined-channel})))
+                                 {:keys [data]}]
+  (let [channel (:channel data)]
+    (s/connect
+     (bus/subscribe event-bus channel)
+     conn
+     {:timeout 1e4})
+    (bus/publish! event-bus channel (encode-message
+                                     {:data {:most-recent-messages (messages/most-recent message-service channel 100)
+                                             :channel channel}
+                                      :event :joined-channel}))))
 
 (defmethod action :leave-channel leave-channel [{:keys [conn]}
                                   {:keys [event-bus channel-service]}
@@ -46,26 +47,23 @@
                                   {:keys [channel-service]}
                                   _]
   (s/put! conn (encode-message {:event :all-channels
-                                :channels (channel/list-all channel-service)})))
+                                :data {:channels (channel/list-all channel-service)}})))
 
-(defmethod action :message message [{:keys [conn username]}
+(defmethod action :send-message message [{:keys [conn username]}
                             {:keys [event-bus message-service]}
-                            {:keys [channel body] :as msg}]
-  (log/info "got message" msg)
-  (let [created-message (messages/create
+                            {:keys [data] :as msg}]
+  (let [channel (:channel data)
+        created-message (messages/create
                          message-service
                          (->
-                          (select-keys msg [:channel :body :client-id])
+                          (select-keys data [:channel :body :client-id])
                           (assoc :user username)))]
-    (log/info "created message" msg)
     (bus/publish!
      event-bus
      channel
      (encode-message
-      (assoc
-       created-message
-       :event
-       :new-message)))))
+      {:data created-message
+       :event :new-message}))))
 
 (defmethod action :default [_ _ msg]
   (log/warn "Unhandled action" msg))
@@ -80,15 +78,15 @@
                authentication (decode-message msg)
                authentication-call? (= :authenticate (:action authentication))
                connections (:connections component)
-               context {:username (get-in authentication [:identity :username])
-                        :full-name (get-in authentication [:identity :full-name])
+               context {:username (get-in authentication [:data :username])
+                        :full-name (get-in authentication [:data :full-name])
                         :conn conn
                         :subscriptions (atom {})}]
 
               (s/put! conn
                       (encode-message
                        {:event :authentication
-                        :result (if authentication-call? :ok :failed)}))
+                        :data {:result (if authentication-call? :ok :failed)}}))
 
               (if (not authentication-call?)
                 (s/close! conn))
