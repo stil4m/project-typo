@@ -43,8 +43,8 @@
 ;; Setup Channels
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn setup-channels
-  [db [channels]]
-  (assoc db :channels (into {} (map #(vector (:id %) (enrich-channel %)) channels))))
+  [db [message-data]]
+  (assoc db :channels (into {} (map #(vector (:id %) (enrich-channel %)) (:channels message-data)))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -77,9 +77,10 @@
                          (:queue channel))))
 
 (defn received-message
-  [db [message]]
-  (update-in db [:channels (:channel message)]
+  [db [message-data]]
+  (.log js/console (str message-data))
+  (update-in db [:channels (:channel message-data)]
              (fn [target-channel]
                (->> (increase-unread-when-not-active db target-channel)
-                    (add-message-to-channel-messages message)
-                    (remove-message-from-channel-queue message)))))
+                    (add-message-to-channel-messages message-data)
+                    (remove-message-from-channel-queue message-data)))))

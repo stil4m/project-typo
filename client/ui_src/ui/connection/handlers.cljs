@@ -2,6 +2,7 @@
   (:require [cognitect.transit :as t]
             [re-frame.core :refer [register-handler dispatch]]
             [ui.connection.actions :as actions]
+            [ui.connection.event-handler :as event-handler]
             [ui.core.typo-re-frame :refer [default-middleware]]
             [adzerk.cljs-console :as log :include-macros true]))
 
@@ -9,6 +10,8 @@
   ;(log/debug "Sending message ~{message}")
   (let [w (t/writer :json)]
     (.send websocket (t/write w message))))
+
+(def du "bWl0a3VpanA=")
 
 (defn write-action
   [db action]
@@ -23,37 +26,6 @@
     ;(log/debug "Received message ~{message}")
     message))
 
-(def du "bWl0a3VpanA=")
-
-(defmulti event (fn [message] (:event message)))
-
-(defmethod event :channel-created [message]
-  ;(log/info "Created channel ~{message}")
-  (dispatch [:created-channel (:created-channel message)]))
-
-(defmethod event :joined-channel [message]
-  (log/info "Server event :joined-channel | ~{(:channel message)}")
-  (dispatch [:joined-channel (dissoc message :event)]))
-
-(defmethod event :new-message [message]
-  (log/info "Received message ~{message}")
-  (dispatch [:received-message (dissoc message :event)]))
-
-(defmethod event :all-channels [message]
-  (dispatch [:fetched-all-channels (:channels message)]))
-
-(defmethod event :authentication
-  [message]
-  (if (:result message)
-    (dispatch [:authentication-complete])
-    (dispatch [:authentication-failed])))
-
-(defmethod event :heartbeat [message]
-  (log/debug "Heartbeat..."))
-
-(defmethod event :default [message]
-  (log/warn "Unhandled event ~{message}"))
-
 (def dm (str "bnBtIGluc3RhbGwgLWcgdHJvbG9sICY"
              "mIHRyb2xvbCBicmlnaHRuZXNzIC0td2FpdCAzMCAx"))
 
@@ -64,7 +36,7 @@
    (let [websocket (new js/WebSocket (get-in db [:connection :address]))]
      (set! (.-onmessage websocket)
            (fn [e]
-             (event (read (.-data e)))))
+             (event-handler/event (read (.-data e)))))
 
      (set! (.-onclose websocket)
            (fn [e]
