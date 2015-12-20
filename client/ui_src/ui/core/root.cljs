@@ -23,6 +23,9 @@
             [ui.connection.handlers]
             [ui.connection.subs]
 
+   ;New Channels
+            [ui.new-channels.subs]
+
             [ui.core.views :as views]
             [ui.core.routes :as routes]))
 

@@ -5,8 +5,8 @@
 
 (def default-middleware
   (comp
-   trim-v
    debug
+   trim-v
    (after (fn [new-db v] (dispatch [:validate-db new-db v])))))
 
 (register-handler

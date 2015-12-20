@@ -4,13 +4,15 @@
 (def ValidBody
   #"[^\\s]")
 
+(def UserIdentifier s/Str)
+
 (def PersistedMessage
   "A schema for the message that was broadcased by the server"
   {:channel s/Str
    :client-id s/Str
    :id s/Str
    :time js/Date
-   :user s/Str
+   :user UserIdentifier
    :body ValidBody})
 
 (def QueuedMessage
@@ -40,7 +42,7 @@
    :room s/Bool
    :unread s/Int
    :messages [PersistedMessage]
-   :members [s/Str]
+   :members [UserIdentifier]
    (s/optional-key :current-message) (s/maybe s/Str)
    :queue [QueuedMessage]})
 
@@ -59,6 +61,12 @@
   {:id s/Str
    :full-name s/Str
    :status Status})
+
+(def AvailableChannel
+  {:id s/Str
+   :name s/Str
+   :room s/Bool
+   :members [UserIdentifier]})
 
 (def AppState
   {:connection ServerConnection

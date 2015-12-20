@@ -8,10 +8,6 @@
             [ui.main.transitions :as transitions]
             [ui.connection.handlers :refer [write]]))
 
-(defn has-channel-open?
-  [db channel]
-  (contains? (set (:subscribed-channels db)) (:id channel)))
-
 (defn send-message-for-current-channel
   [db []]
   (let [channel (get-in db [:channels (:current-channel db)])
@@ -32,7 +28,7 @@
 
 (defn perform-channel-leave
   [db [channel]]
-  (write (get-in db [:connection :ws]) {:action :leave-channel :channel (:id channel)}))
+  (write (get-in db [:connection :ws]) {:action :leave-channel :data {:channel (:id channel)}}))
 
 (register-handler
  :set-active-channel
@@ -63,6 +59,7 @@
   (after (fn [db [created-channel]] (dispatch [:join-channel created-channel])))]
  transitions/add-created-channel)
 
+;TODO We should add a joined-channels for the initial join
 (register-handler
  :joined-channel
  [default-middleware]
@@ -71,7 +68,8 @@
 
 (defn join-all-channels
   [_ [channels]]
-  (doall (map
+  ;TODO Join Channels that were open the last time you were online
+  #_(doall (map
           #(dispatch [:join-channel %])
           channels)))
 

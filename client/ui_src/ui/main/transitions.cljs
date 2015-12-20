@@ -18,8 +18,10 @@
 
 (defn set-as-current-channel
   [db [channel]]
-  (-> (assoc db :current-channel (:id channel))
-      (assoc-in [:channels (:id channel) :unread] 0)))
+  (let [db-with-current (assoc db :current-channel (:id channel))]
+    (if (get-in db-with-current [:channels (:id channel)])
+      (assoc-in db-with-current [:channels (:id channel) :unread] 0)
+      db)))
 
 (defn add-current-message-to-queue
   [db [message-body]]
@@ -82,5 +84,4 @@
 
 (defn update-channels
   [db [channels]]
-  (.log js/console "BEFORE")
   (assoc db :channels (into {} (map #(vector (:id %) (enrich-channel %)) channels))))

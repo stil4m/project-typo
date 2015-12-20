@@ -34,5 +34,8 @@
   [room]
   (fn [e]
     (.preventDefault e)
+    (dispatch [:join-channel room])
+    (dispatch [:set-active-channel room])
+    (route-util/set-route routes/main)
     (.log js/console (str "TODO | Selected room: " room))
     nil))
