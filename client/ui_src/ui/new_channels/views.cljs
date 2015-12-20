@@ -120,15 +120,23 @@
 (defn render
   []
   (fn []
-    [:div.window.flex.flex-column.bg-white
-     [:div.flex-none.mt4
-      [:div.flex
-       [:h1.h2.inline.col-2 "New chat"]
-       [:input.col-4 {:type :text
-                      :placeholder "Search people & rooms"}]
+    [:div.window.bg-white
+     [:div.right.mt2.right-align
+      [:span.btn.material-icons.dark-gray.pointer
+       {:on-click actions/close
+        :style {:font-size "45px"}}
+       "close"]]
+     [:div.col-10.mx-auto
+      [:div.flex.flex-column
+       [:div.flex-none.mt3
+        [:div.col-6
+         [:div.px2
+          [:div.col-6.left
+           [:h1.h2.inline.col-2.dark-gray "New chat"]]
+          [:div.col-6.left.flex
+           [:input.col-4.flex-auto {:type :text
+                          :placeholder "Search people & rooms"}]]]]]
        [:div.flex-auto
-        [:i.right.material-icons.dark-gray "close"]]]]
-     [:div.flex-auto
-      [:div {:style {:width "100%"}}
-       [people-tab people]
-       [rooms-tab rooms]]]]))
+        [:div.mt2
+         [people-tab people]
+         [rooms-tab rooms]]]]]]))

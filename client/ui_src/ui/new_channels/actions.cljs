@@ -3,6 +3,12 @@
             [ui.core.routes :as routes]
             [ui.util.routing :as route-util]))
 
+
+(defn close
+  [e]
+  (.preventDefault e)
+  (route-util/set-route routes/main))
+
 (defn create-channel
   [e]
   (.preventDefault e)
