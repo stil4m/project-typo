@@ -22,3 +22,7 @@
                                 (.quit app)))
 
 (.on app "ready" init-browser)
+
+; Re-initialize the app when dock item is clicked
+; TODO, we do not store state yet, so you start from scratch (not logged in)
+(.on app "activate" #(if (nil? @main-window) (init-browser)))
