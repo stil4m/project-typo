@@ -33,6 +33,6 @@
                        :action actions/set-connection-address
                        :value @connection-address}]
           [:div
-           [:button.btn.btn-primary.pull-right
+           [:button.btn.btn-primary.pull-right.bg-dark-orange
             {:type :submit}
             "Login"]]]]]])))

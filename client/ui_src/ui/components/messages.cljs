@@ -43,14 +43,14 @@
     (go-loop []
       (let [event (<! debounced-scroll-events)]
         (when event
-          (log/info "at bottom = ~(is-at-bottom? (.-target event))") 
+          (log/info "at bottom = ~(is-at-bottom? (.-target event))")
           (recur))))
     (fn [messages]
       [:div.flex-auto.flex-basis-scroll
        {:on-scroll (fn [e]
                      (put! scroll-events (.-nativeEvent e))
                      nil)}
-       (into [:div.m3]
+       (into [:div.m2]
              (doall (map-indexed
                      (fn [i message]
                        [:div.h4.py1.mb1.py2.rounded
