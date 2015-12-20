@@ -1,17 +1,16 @@
 (ns ui.schema.app-state
-  (:require [schema.core :as s]))
+  (:require [schema.core :as s]
+            [ui.schema.base :refer [UserIdentifier ChannelIdentifier Status]]))
 
 (def ValidBody
   #"[^\\s]")
 
-(def UserIdentifier s/Str)
-
 (def PersistedMessage
   "A schema for the message that was broadcased by the server"
-  {:channel s/Str
+  {:channel ChannelIdentifier
    :client-id s/Str
    :id s/Str
-   :time js/Date
+   :time s/Num
    :user UserIdentifier
    :body ValidBody})
 
@@ -38,7 +37,7 @@
    :future [s/Any]})
 
 (def Channel
-  {:id s/Str
+  {:id ChannelIdentifier
    :name s/Str
    :room s/Bool
    :unread s/Int
@@ -48,10 +47,7 @@
    :queue [QueuedMessage]})
 
 (def Channels
-  {s/Str Channel})
-
-(def Status
-  (s/enum :available :offline :busy))
+  {ChannelIdentifier Channel})
 
 (def CurrentUser
   {:username s/Str
@@ -72,7 +68,7 @@
    :user (s/maybe CurrentUser)
    :people [Person]
    :route Route
-   :subscribed-channels [s/Str]
-   :current-channel (s/maybe s/Str)
+   :subscribed-channels [ChannelIdentifier]
+   :current-channel (s/maybe ChannelIdentifier)
    :new-channel-page NewChannelPage
    :channels Channels})
