@@ -3,7 +3,7 @@
             [ui.schema.base :refer [UserIdentifier ChannelIdentifier Status]]))
 
 (def ValidBody
-  #"[^\\s]")
+  #"[^\s]")
 
 (def PersistedMessage
   "A schema for the message that was broadcased by the server"

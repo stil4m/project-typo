@@ -63,4 +63,4 @@
                               "Sending..."
                               (time/timestamp->time (:time message)))]]
                           [:div.mt0.gray (:body message)]]]])
-                     messages)))])))
+                     (reverse messages))))])))
