@@ -12,11 +12,11 @@
                 :error nil
                 :data {:username "matstijl"
                        :full-name "Mats Stijlaart"}}
-   :people [{:id "matstijl" :full-name "Mats Stijlaart" :status :online}
-            {:id "mitkuijp" :full-name "Tomas Theunissen" :status :online}
+   :people [{:id "matstijl" :full-name "Mats Stijlaart" :status :available}
+            {:id "mitkuijp" :full-name "Tomas Theunissen" :status :available}
             {:id "tomtheun" :full-name "Mitchel Kuijpers" :status :busy}
-            {:id "maaarts" :full-name "Maarten Arts" :status :online}
-            {:id "guest1234" :full-name "Philip Geubels" :status :online}]
+            {:id "maaarts" :full-name "Maarten Arts" :status :available}
+            {:id "guest1234" :full-name "Philip Geubels" :status :available}]
    :current-channel nil
    :open-channels []
    :channels {}})

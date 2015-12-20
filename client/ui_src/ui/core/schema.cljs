@@ -45,7 +45,7 @@
   {s/Str Channel})
 
 (def Status
-  (s/enum :online :offline :busy))
+  (s/enum :available :offline :busy))
 
 (def CurrentUser
   {:username s/Str
