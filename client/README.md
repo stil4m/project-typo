@@ -34,3 +34,8 @@ lein cljsbuild once electron-release
 ```
 
 To verify the output run: `electron .`.
+
+Create OS X build:
+```
+electron-packager . Typo --platform=darwin --arch=x64 --version=0.36.1 --icon=./electron_src/electron/images/Typo-icon-orange.icns --out=./packages
+```
