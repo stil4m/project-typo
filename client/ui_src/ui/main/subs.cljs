@@ -1,5 +1,5 @@
 (ns ui.main.subs
-  (:require-macros [reagent.ratom :refer [reaction]])
+  (:require-macros [reagent.ratom :refer [reaction run!]])
   (:require [re-frame.core :refer [register-sub subscribe]]))
 
 (register-sub
@@ -36,3 +36,14 @@
  (fn [db]
    (reaction (when (:current-channel @db)
                (get-in @db [:channels (:current-channel @db)])))))
+
+(register-sub
+ :total-unread
+ (fn [_]
+   (let [room-channels (subscribe [:room-channels])]
+     (reaction (reduce (fn [cnt v] (+ cnt (:unread v))) 0 @room-channels)))))
+
+(def total-unread (subscribe [:total-unread]))
+(run!
+  (let [electron (.require js/window "electron")]
+    (.setBadge (.. electron -remote -app -dock) (if (= @total-unread 0) "" (str @total-unread)))))
