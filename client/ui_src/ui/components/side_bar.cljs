@@ -56,7 +56,7 @@
   [current-channel channels-state current-user]
   [:nav.flex.flex-none.flex-column.contacts-sidebar.bg-dark-blue {:style {:padding "5px"}}
    [:div.flex.flex-row
-    [:button.mt3.mr1.ml1.flex-auto.h5.btn.btn-primary.dark-gray.bg-light-gray {:on-click (create-channel "My room")} "New Chat"]]
+    [:button.mt-specific-35.mr1.ml1.flex-auto.h5.btn.btn-primary.dark-gray.bg-light-gray {:on-click (create-channel "My room")} "New Chat"]]
    [:div.flex-auto.mt3
     [channel-list "Rooms"
      current-channel
