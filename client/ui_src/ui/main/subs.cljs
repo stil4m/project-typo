@@ -2,6 +2,10 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub subscribe]]))
 
+(register-sub
+ :current-user
+ (fn [db]
+   (reaction (:user @db))))
 
 (register-sub
  :channel-list

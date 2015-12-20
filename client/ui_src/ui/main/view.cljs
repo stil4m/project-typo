@@ -25,7 +25,7 @@
            items))))
 
 (defn contacts-side-bar
-  [current-channel channels-state]
+  [current-channel channels-state current-user]
   [:nav.flex.flex-none.flex-column.contacts-sidebar.bg-dark-blue {:style {:padding "5px"}}
    [:div.flex.flex-row
     [:button.mt3.mr1.ml1.flex-auto.h5.btn.btn-primary.dark-gray.bg-white.regular {:on-click (actions/create-channel "My room")} "+ New Chat"]]
@@ -38,7 +38,7 @@
      (:people channels-state)]]
    [:div.user-menu.h4.lh4.px2.flex
     [:span [:i.material-icons.flex-center {:class "green"} "lens"]]
-    [:span.name.px1.light-blue.flex-center "Maarten Arts"]
+    [:span.name.px1.light-blue.flex-center (:full-name current-user)]
     [:span.options.light-blue.flex-center [:i.material-icons.grey "keyboard_arrow_down"]]]])
 
 (defn message-box
@@ -70,9 +70,10 @@
   []
   (let [route (subscribe [:route-state])
         current-channel (subscribe [:current-channel])
-        channels-state (subscribe [:channels-state])]
+        channels-state (subscribe [:channels-state])
+        current-user (subscribe [:current-user])]
     (fn []
       [:div.window.flex.flex-row
-       [contacts-side-bar @current-channel @channels-state]
+       [contacts-side-bar @current-channel @channels-state @current-user]
        [message-panel @current-channel]])))
 ;[:aside.flex.flex-none.operations-sidebar.bg-light-gray.border-left.border-color-silver]])))
