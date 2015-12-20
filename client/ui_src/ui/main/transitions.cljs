@@ -30,6 +30,7 @@
              (fn [channel]
                (-> (dissoc channel :current-message)
                    (update :queue conj {:client-id (str (uuid/make-random-uuid))
+                                        :user (get-in db [:user :username])
                                         :body message-body})))))
 
 ;; Handle received message

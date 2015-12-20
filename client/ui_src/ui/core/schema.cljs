@@ -18,6 +18,7 @@
 (def QueuedMessage
   "A schema for the message that was was send "
   {:body ValidBody
+   :user UserIdentifier
    :client-id s/Str})
 
 (def ServerConnection
