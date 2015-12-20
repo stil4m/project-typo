@@ -1,13 +1,15 @@
 (ns ui.main.actions
   (:require [re-frame.core :refer [dispatch dispatch-sync]]
             [ui.util.events :as util]
+            [ui.util.routing :as route-util]
+            [ui.core.routes :as routes]
             [clojure.string :as str]))
 
 (defn create-channel
   [name]
   (fn [e]
     (.preventDefault e)
-    (dispatch [:create-channel {:name name}])))
+    (route-util/set-route routes/new-channels)))
 
 (defn select-channel
   [channel]

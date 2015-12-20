@@ -14,3 +14,9 @@
   {:view [:main]
    :params params
    :query-params (:query-params params)})
+
+
+(defroute new-channels "/new-channels" {:as params}
+          {:view [:new-channels]
+           :params params
+           :query-params (:query-params params)})

@@ -73,7 +73,6 @@
         channels-state (subscribe [:channels-state])
         current-user (subscribe [:current-user])]
     (fn []
-      (.log js/console "Render main view")
       [:div.window.flex.flex-row
        [contacts-side-bar @current-channel @channels-state @current-user]
        [message-panel @current-channel]])))
