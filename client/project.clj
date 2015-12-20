@@ -5,7 +5,6 @@
                  [figwheel "0.5.0-2"]
                  [re-frame "0.6.0"]
                  [ring/ring-core "1.4.0"]
-                 [secretary "1.2.3"]
                  [adzerk/cljs-console "0.1.1" :scope "provided"]
                  [tranchis/figwheel-sidecar "0.5.0-2"]
                  [com.andrewmcveigh/cljs-time "0.3.14"]

@@ -1,6 +1,5 @@
 (ns ui.core.root
   (:require [reagent.core :as reagent :refer [atom]]
-            [secretary.core :as secretary]
             [re-frame.core :refer [dispatch-sync
                                    subscribe]]
 

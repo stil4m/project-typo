@@ -1,6 +1,5 @@
 (ns ui.util.routing
-  (:require [re-frame.core :refer [dispatch]]
-            [secretary.core :as secretary]))
+  (:require [re-frame.core :refer [dispatch]]))
 
 
 (defn- prevent-and-dispatch
@@ -20,7 +19,7 @@
 
 (defn nav-to-route
   [f]
-  (dispatch [:routing/add-route (secretary/dispatch! (f))]))
+  (dispatch [:routing/add-route (f)]))
 
 (defn nav-to-route-fn
   [f]
@@ -31,7 +30,7 @@
 
 (defn set-route
   [f]
-  (dispatch [:routing/set-route (secretary/dispatch! (f))]))
+  (dispatch [:routing/set-route (f)]))
 
 (defn set-route-fn
   [f]

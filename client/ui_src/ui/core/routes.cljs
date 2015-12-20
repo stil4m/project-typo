@@ -1,22 +1,6 @@
-(ns ui.core.routes
-  (:require-macros [secretary.core :refer [defroute]])
-  (:require [secretary.core :as secretary]))
+(ns ui.core.routes)
 
-(secretary/reset-routes!)
-(secretary/set-config! :prefix "#!")
+(defn login [] {:view [:login]})
+(defn main [] {:view [:main]})
+(defn new-channels [] {:view [:new-channels]})
 
-(defroute login "/login" {:as params}
-  {:view [:login]
-   :params params
-   :query-params (:query-params params)})
-
-(defroute main "/main" {:as params}
-  {:view [:main]
-   :params params
-   :query-params (:query-params params)})
-
-
-(defroute new-channels "/new-channels" {:as params}
-          {:view [:new-channels]
-           :params params
-           :query-params (:query-params params)})
