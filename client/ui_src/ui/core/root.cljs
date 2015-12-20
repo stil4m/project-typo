@@ -23,6 +23,9 @@
             [ui.connection.handlers]
             [ui.connection.subs]
 
+   ;Channels
+            [ui.channels.handlers]
+
    ;New Channels
             [ui.new-channels.subs]
             [ui.new-channels.handlers]
@@ -35,7 +38,7 @@
 (defn render
   []
   (reagent/render [views/main-view]
-    (.-body js/document)))
+                  (.-body js/document)))
 
 (defn ^:export init
   []
