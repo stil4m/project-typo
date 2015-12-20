@@ -1,4 +1,6 @@
 target/
+
+.DS_Store
 *-init.clj
 figwheel_server.log
 

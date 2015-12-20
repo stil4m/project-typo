@@ -21,7 +21,7 @@
 (register-handler
  :fetch-all-channels
  [default-middleware
-  (after (fn [db] (write-action db {:action :list-channels})))]
+  (after (fn [db] (write-action db (actions/list-channels))))]
  identity)
 
 (register-handler

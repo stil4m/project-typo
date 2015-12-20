@@ -2,21 +2,22 @@
   (:require [re-frame.core :refer [register-handler dispatch after]]
             [ui.core.typo-re-frame :refer [default-middleware]]
             [ui.channels.transitions :as transitions]
-            [ui.connection.handlers :refer [write-action]]))
+            [ui.connection.handlers :refer [write-action]]
+            [ui.connection.actions :as actions]))
 
 
 ;; Side Effects
 (defn perform-channel-create
   [db [channel]]
-  (write-action db (merge {:action :create-channel} (select-keys channel [:name]))))
+  (write-action db (actions/create-channel {:name (:name channel)})))
 
 (defn perform-channel-join
   [db [channel]]
-  (write-action db {:action :join-channel :channel (:id channel)}))
+  (write-action db (actions/join-channel {:channel (:id channel)})))
 
 (defn perform-channel-leave
   [db [channel]]
-  (write-action db {:action :leave-channel :data {:channel (:id channel)}}))
+  (write-action db (actions/leave-channel {:channel (:id channel)})))
 
 
 (register-handler

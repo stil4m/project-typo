@@ -6,13 +6,15 @@
             [ui.core.typo-re-frame :refer [default-middleware]]
             [adzerk.cljs-console :as log :include-macros true]
             [ui.main.transitions :as transitions]
-            [ui.connection.handlers :refer [write-action]]))
+            [ui.connection.handlers :refer [write-action]]
+            [ui.connection.actions :as actions]))
 
 (defn send-message-for-current-channel
   [db []]
   (let [channel (get-in db [:channels (:current-channel db)])
         message (last (:queue channel))]
-    (write-action db (merge (select-keys message [:client-id :body]) {:action :message :channel (:id channel)}))))
+    (write-action db (actions/send-message
+                      (assoc (select-keys message [:client-id :body]) :channel (:id channel))))))
 
 (register-handler
  :set-active-channel
