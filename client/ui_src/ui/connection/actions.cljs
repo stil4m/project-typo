@@ -28,6 +28,17 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Get Channel
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(s/defschema GetChannel
+  {:channel s/Str})
+
+(s/defn get-channel
+  [d :- GetChannel]
+  (data->action :get-channel d))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Create Channel
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (s/defschema CreateChannel
@@ -39,6 +50,17 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Create Conversation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(s/defschema CreateConversation
+  {:user s/Str})
+
+(s/defn create-conversation
+  [d :- CreateConversation]
+  (data->action :create-conversation d))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Join Channel
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (s/defschema JoinChannel
@@ -47,6 +69,32 @@
 (s/defn join-channel
   [d :- JoinChannel]
   (data->action :join-channel d))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Invite User
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(s/defschema InviteUser
+  {:channel s/Str
+   :user s/Str
+   :admin s/Bool})
+
+(s/defn invite-user
+  [d :- InviteUser]
+  (data->action :invite-user d))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Change Channel Name
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(s/defschema ChangeChannelName
+  {:channel s/Str
+   :name s/Str})
+
+(s/defn change-channel-name
+  [d :- ChangeChannelName]
+  (data->action :change-channel-name d))
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
