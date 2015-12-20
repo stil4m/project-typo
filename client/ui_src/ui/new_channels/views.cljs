@@ -21,8 +21,8 @@
    [avatar]
    [:div.flex-auto
     [:div.flex.flex-column
-     [:div.dark-gray.bold.lh7-8.capitalize (:full-name person)]
-     [:div.gray.flex-auto.mt05.lh7-8 (status-text (:status person))]]]])
+     [:div.dark-gray.bold.lh7-8.capitalize.mt-nudge1 (:full-name person)]
+     [:div.gray.flex-auto.mt05.lh7-8.h45 (status-text (:status person))]]]])
 
 (defn room-item
   [room]
@@ -31,8 +31,8 @@
    [avatar]
    [:div.flex-auto
     [:div.flex.flex-column
-     [:div.dark-gray.bold.lh7-8.capitalize (:name room)]
-     [:div.gray.flex-auto.mt05.lh7-8 (participants-text (:participants room))]]]])
+     [:div.dark-gray.bold.lh7-8.capitalize.mt-nudge1 (:name room)]
+     [:div.gray.flex-auto.mt05.lh7-8.h45 (participants-text (:participants room))]]]])
 
 (defn people-tab
   [people]
@@ -66,7 +66,7 @@
              :style {:padding-left "36px;"}
              :on-change actions/change-channel-filter
              :placeholder "Search people & rooms"}]
-          [:button.px3.btn.btn-primary.pull-right.bg-dark-orange.ls2.right
+          [:button.px3.btn.btn-primary.pull-right.bg-dark-blue.ls2.right.h5
            {:type :submit
             :on-click actions/create-channel}
            "New Room"]]
@@ -74,12 +74,12 @@
           [:div.flex-grow.mr3
             [:div.border-bottom.bottom-color-silver.ml15
              [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "People"]]]
-          [:div.flex-grow.ml3
+          [:div.flex-grow.ml35
             [:div.border-bottom.bottom-color-silver.ml15
              [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "Rooms"]]]]
         [:div.flex
             {:style {:height "537px" :overflow-y "scroll"}}
           [:div.flex-grow.mr3
             [people-tab (:people @available-channels)]]
-          [:div.flex-grow.ml3
+          [:div.flex-grow
             [rooms-tab (:rooms @available-channels)]]]])))
