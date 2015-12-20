@@ -57,9 +57,11 @@
 
 (defn enrich-channel
   [channel]
-  (assoc channel :unread (max (:unread channel) 0)
+  (assoc channel :room (get channel :queue true) ; TODO, temporarily added to be schema compliant (should be set when starting a room/conversation)
+                 :unread (max (:unread channel) 0)
                  :queue (vec (:queue channel))
-                 :messages (vec (:messages channel))))
+                 :messages (vec (:messages channel))
+                 :member (vec (:members channel))))
 
 (defn add-created-channel
   [db [created-channel]]

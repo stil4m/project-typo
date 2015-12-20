@@ -37,8 +37,10 @@
 (def Channel
   {:id s/Str
    :name s/Str
+   :room s/Bool
    :unread s/Int
    :messages [PersistedMessage]
+   :members [s/Str]
    (s/optional-key :current-message) (s/maybe s/Str)
    :queue [QueuedMessage]})
 
