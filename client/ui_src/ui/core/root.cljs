@@ -25,6 +25,7 @@
 
    ;New Channels
             [ui.new-channels.subs]
+            [ui.new-channels.handlers]
 
             [ui.core.views :as views]
             [ui.core.routes :as routes]))

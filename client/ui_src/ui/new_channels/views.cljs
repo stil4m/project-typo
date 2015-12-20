@@ -3,50 +3,6 @@
             [ui.components.avatar :refer [avatar]]
             [ui.new-channels.actions :as actions]))
 
-(def people
-  [{:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :busy}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :offline}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}])
-
 (defn status-text
   [status]
   (case status
@@ -76,7 +32,7 @@
    [:div.flex-auto
     [:div.flex.flex-column
      [:div.dark-gray.bold.lh7-8.capitalize (:name room)]
-     [:div.gray.flex-auto.mt05.lh7-8 (participants-text (count (:members room)))]]]])
+     [:div.gray.flex-auto.mt05.lh7-8 (participants-text (:participants room))]]]])
 
 (defn tab-header
   [title]
@@ -135,5 +91,5 @@
                 :placeholder "Search people & rooms"}]]]]]]
          [:div.flex-auto
           [:div.mt2
-           [people-tab people]
-           [rooms-tab @available-channels]]]]]])))
+           [people-tab (:people @available-channels)]
+           [rooms-tab (:rooms @available-channels)]]]]]])))

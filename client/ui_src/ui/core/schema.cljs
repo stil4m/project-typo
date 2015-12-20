@@ -62,11 +62,8 @@
    :full-name s/Str
    :status Status})
 
-(def AvailableChannel
-  {:id s/Str
-   :name s/Str
-   :room s/Bool
-   :members [UserIdentifier]})
+(def NewChannelPage
+  {:query s/Str})
 
 (def AppState
   {:connection ServerConnection
@@ -76,4 +73,5 @@
    :route Route
    :subscribed-channels [s/Str]
    :current-channel (s/maybe s/Str)
+   :new-channel-page NewChannelPage
    :channels Channels})

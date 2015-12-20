@@ -15,6 +15,7 @@
 (defn render
   []
   (let [login-form-state (subscribe [:login-form-state])
+        available-channels (subscribe [:available-channels])
         connection-address (subscribe [:connection-address])]
     (fn []
       [:div.window.flex
