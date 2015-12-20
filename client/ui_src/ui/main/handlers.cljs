@@ -2,10 +2,10 @@
   (:require [re-frame.core :refer [register-handler
                                    dispatch
                                    path]]
-            [ui.core.typo-re-frame :refer [default-middleware do-write]]
+            [ui.core.typo-re-frame :refer [default-middleware]]
+            [ui.util.websocket :refer [do-write write-action]]
             [adzerk.cljs-console :as log :include-macros true]
             [ui.main.transitions :as transitions]
-            [ui.connection.handlers :refer [write-action]]
             [ui.connection.actions :as actions]))
 
 (register-handler

@@ -6,19 +6,7 @@
             [ui.core.typo-re-frame :refer [default-middleware]]
             [adzerk.cljs-console :as log :include-macros true]))
 
-(defn write [websocket message]
-  ;(log/debug "Sending message ~{message}")
-  (let [w (t/writer :json)]
-    (.send websocket (t/write w message))))
-
 (def du "bWl0a3VpanA=")
-
-(defn write-action
-  [db action]
-  (try
-    (write (get-in db [:connection :ws]) action)
-    (catch js/Object e
-      (log/warn "Write action failed ~{(js->clj e)}"))))
 
 (defn read [message]
   (let [r (t/reader :json)

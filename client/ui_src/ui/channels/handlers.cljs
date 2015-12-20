@@ -1,6 +1,7 @@
 (ns ui.channels.handlers
   (:require [re-frame.core :refer [register-handler dispatch after]]
-            [ui.core.typo-re-frame :refer [default-middleware do-write]]
+            [ui.core.typo-re-frame :refer [default-middleware]]
+            [ui.util.websocket :refer [do-write]]
             [ui.channels.transitions :as transitions]
             [ui.connection.actions :as actions]))
 

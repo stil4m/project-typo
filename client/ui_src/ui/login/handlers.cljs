@@ -3,7 +3,8 @@
                                    dispatch
                                    path
                                    after]]
-            [ui.core.typo-re-frame :refer [default-middleware do-write]]
+            [ui.core.typo-re-frame :refer [default-middleware]]
+            [ui.util.websocket :refer [do-write]]
             [ui.util.routing :as routing]
             [ui.core.routes :as routes]
             [ui.connection.actions :as actions]))
