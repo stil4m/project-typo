@@ -9,19 +9,6 @@
     (.preventDefault e)
     (dispatch [:create-channel {:name name}])))
 
-(defn leave-channel
-  [channel]
-  (fn [e]
-    (.preventDefault e)
-    (.stopPropagation e)
-    (dispatch [:leave-channel channel])))
-
-(defn join-channel
-  [channel]
-  (fn [e]
-    (.preventDefault e)
-    (dispatch [:join-channel channel])))
-
 (defn select-channel
   [channel]
   (fn [e]

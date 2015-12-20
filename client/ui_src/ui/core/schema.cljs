@@ -45,6 +45,7 @@
 (def Channel
   {:id s/Str
    :name s/Str
+   :unread s/Int
    :messages [PersistedMessage]
    (s/optional-key :current-message) (s/maybe s/Str)
    :queue [QueuedMessage]})
@@ -71,6 +72,6 @@
    (s/required-key :user) (s/maybe CurrentUser)
    (s/required-key :people) [Person]
    (s/required-key :route) Route
-   (s/required-key :open-channels) [s/Str]
+   (s/required-key :subscribed-channels) [s/Str]
    :current-channel (s/maybe s/Str)
    (s/required-key :channels) Channels})

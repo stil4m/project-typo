@@ -20,5 +20,5 @@
             {:id "maaarts" :full-name "Maarten Arts" :status :online}
             {:id "guest1234" :full-name "Philip Geubels" :status :online}]
    :current-channel nil
-   :open-channels []
+   :subscribed-channels []
    :channels {}})

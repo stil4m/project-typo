@@ -10,7 +10,7 @@
 
 (defn has-channel-open?
   [db channel]
-  (contains? (set (:open-channels db)) (:id channel)))
+  (contains? (set (:subscribed-channels db)) (:id channel)))
 
 (defn send-message-for-current-channel
   [db []]
@@ -28,11 +28,7 @@
 
 (defn perform-channel-join
   [db [channel]]
-  (if (has-channel-open? db channel)
-    (dispatch [:joined-channel channel])
-    (do
-      (write (get-in db [:connection :ws]) {:action :join-channel :channel (:id channel)})
-      (dispatch [:joined-channel channel]))))
+  (write (get-in db [:connection :ws]) {:action :join-channel :channel (:id channel)}))
 
 (defn perform-channel-leave
   [db [channel]]
@@ -41,7 +37,7 @@
 (register-handler
  :set-active-channel
  [default-middleware]
- transitions/set-as-current-channel-and-add-to-open)
+ transitions/set-as-current-channel)
 
 (register-handler
  :send-current-message
@@ -67,6 +63,12 @@
   (after (fn [db [created-channel]] (dispatch [:join-channel created-channel])))]
  transitions/add-created-channel)
 
+(register-handler
+ :joined-channel
+ [default-middleware]
+ transitions/joined-channel)
+
+
 (defn join-all-channels
   [_ [channels]]
   (doall (map
@@ -85,10 +87,6 @@
   (after perform-channel-join)]
  identity)
 
-(register-handler
- :joined-channel
- [default-middleware]
- transitions/set-as-current-channel-and-add-to-open)
 
 (register-handler
  :leave-channel

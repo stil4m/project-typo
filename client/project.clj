@@ -1,6 +1,5 @@
 (defproject hello-electron "0.1.0-SNAPSHOT"
   :source-paths ["src"]
-  :description "A hello world application for electron"
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.clojure/clojurescript "1.7.189"]
                  [figwheel "0.5.0-2"]

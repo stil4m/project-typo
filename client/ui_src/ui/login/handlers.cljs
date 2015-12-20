@@ -54,7 +54,7 @@
   (after #(dispatch [:connect-to-server]))]
  identity)                                                  ;TODO
 
-(register-handler
+  (register-handler
  :login-submission-data-invalid
  (fn [db]
    ;TODO UNSET LOADING
