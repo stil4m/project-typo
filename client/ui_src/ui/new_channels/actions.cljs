@@ -2,8 +2,8 @@
   (:require [re-frame.core :refer [dispatch dispatch-sync]]
             [ui.core.routes :as routes]
             [ui.util.events :as util]
+            [ui.util.time :as time]
             [ui.util.routing :as route-util]))
-
 
 (defn close
   [e]
@@ -19,7 +19,7 @@
 (defn create-channel
   [e]
   (.preventDefault e)
-  (dispatch [:create-channel {:name "A Room"}])
+  (dispatch [:create-channel {:name (str "Room " (time/timestamp->time (js/Date.)))}])
   (route-util/set-route routes/main))
 
 
