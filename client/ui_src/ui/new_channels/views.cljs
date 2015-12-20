@@ -1,56 +1,7 @@
 (ns ui.new-channels.views
-  (:require [ui.components.avatar :refer [avatar]]
+  (:require [re-frame.core :refer [subscribe]]
+            [ui.components.avatar :refer [avatar]]
             [ui.new-channels.actions :as actions]))
-
-(def rooms
-  [{:name "Bier drinken"
-    :participants 6}
-   {:name "Bier drinken"
-    :participants 6}])
-
-(def people
-  [{:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :busy}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :offline}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}])
 
 (defn status-text
   [status]
@@ -104,28 +55,31 @@
 (defn render
   []
   (fn []
-    [:div.bg-white {:style {:width "664px" :height "600px" :margin "100px auto" :padding "50px" :border "1px solid #ccc" :border-radius "5px"}}
-      [:div.flex-auto.clearfix
-        [:i.material-icons.small-icon.px05.absolute.gray.ml1.mt-nudge1 "search"]
-        [:input.border.border-color-silver.rounded.left.col-5
-          {:type :text
-           :style {:padding-left "36px;"}
-           :on-change actions/change-channel-filter
-           :placeholder "Search people & rooms"}]
-        [:button.px3.btn.btn-primary.pull-right.bg-dark-orange.ls2.right
-         {:type :submit
-          :on-click actions/create-channel}
-         "New Room"]]
-      [:div.flex.mt3
-        [:div.flex-grow.mr3
-          [:div.border-bottom.bottom-color-silver.ml15
-           [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "People"]]]
-        [:div.flex-grow.ml3
-          [:div.border-bottom.bottom-color-silver.ml15
-           [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "Rooms"]]]]
-      [:div.flex
-          {:style {:height "537px" :overflow-y "scroll"}}
-        [:div.flex-grow.mr3
-          [people-tab people]]
-        [:div.flex-grow.ml3
-          [rooms-tab rooms]]]]))
+    (let [available-channels (subscribe [:available-channels])]
+      (.log js/console (str "ABC"))
+      (.log js/console (str @available-channels))
+      [:div.bg-white {:style {:width "664px" :height "600px" :margin "100px auto" :padding "50px" :border "1px solid #ccc" :border-radius "5px"}}
+        [:div.flex-auto.clearfix
+          [:i.material-icons.small-icon.px05.absolute.gray.ml1.mt-nudge1 "search"]
+          [:input.border.border-color-silver.rounded.left.col-5
+            {:type :text
+             :style {:padding-left "36px;"}
+             :on-change actions/change-channel-filter
+             :placeholder "Search people & rooms"}]
+          [:button.px3.btn.btn-primary.pull-right.bg-dark-orange.ls2.right
+           {:type :submit
+            :on-click actions/create-channel}
+           "New Room"]]
+        [:div.flex.mt3
+          [:div.flex-grow.mr3
+            [:div.border-bottom.bottom-color-silver.ml15
+             [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "People"]]]
+          [:div.flex-grow.ml3
+            [:div.border-bottom.bottom-color-silver.ml15
+             [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "Rooms"]]]]
+        [:div.flex
+            {:style {:height "537px" :overflow-y "scroll"}}
+          [:div.flex-grow.mr3
+            [people-tab (:people @available-channels)]]
+          [:div.flex-grow.ml3
+            [rooms-tab (:rooms @available-channels)]]]])))

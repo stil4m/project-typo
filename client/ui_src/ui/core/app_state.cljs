@@ -12,6 +12,7 @@
                 :error nil
                 :data {:username "matstijl"
                        :full-name "Mats Stijlaart"}}
+   :new-channel-page {:query ""}
    :people [{:id "matstijl" :full-name "Mats Stijlaart" :status :available}
             {:id "mitkuijp" :full-name "Tomas Theunissen" :status :available}
             {:id "tomtheun" :full-name "Mitchel Kuijpers" :status :busy}

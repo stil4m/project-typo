@@ -13,8 +13,7 @@
 (defn change-channel-filter
   [e]
   (.preventDefault e)
-  (.log js/console (str "TODO | Change channel filter: " (util/event->value e)))
-  nil)
+  (dispatch [:new-channel/change-filter (util/event->value e)]))
 
 (defn create-channel
   [e]
@@ -34,5 +33,6 @@
   [room]
   (fn [e]
     (.preventDefault e)
-    (.log js/console (str "TODO | Selected room: " room))
-    nil))
+    (route-util/set-route routes/main)
+    (dispatch [:join-channel room])
+    (dispatch [:set-active-channel room])))

@@ -1,8 +1,10 @@
-(ns ui.core.schema
+(ns ui.schema.app-state
   (:require [schema.core :as s]))
 
 (def ValidBody
   #"[^\\s]")
+
+(def UserIdentifier s/Str)
 
 (def PersistedMessage
   "A schema for the message that was broadcased by the server"
@@ -10,12 +12,13 @@
    :client-id s/Str
    :id s/Str
    :time js/Date
-   :user s/Str
+   :user UserIdentifier
    :body ValidBody})
 
 (def QueuedMessage
   "A schema for the message that was was send "
   {:body ValidBody
+   :user UserIdentifier
    :client-id s/Str})
 
 (def ServerConnection
@@ -40,7 +43,7 @@
    :room s/Bool
    :unread s/Int
    :messages [PersistedMessage]
-   :members [s/Str]
+   :members [UserIdentifier]
    (s/optional-key :current-message) (s/maybe s/Str)
    :queue [QueuedMessage]})
 
@@ -60,6 +63,9 @@
    :full-name s/Str
    :status Status})
 
+(def NewChannelPage
+  {:query s/Str})
+
 (def AppState
   {:connection ServerConnection
    :login-form LoginForm
@@ -68,4 +74,5 @@
    :route Route
    :subscribed-channels [s/Str]
    :current-channel (s/maybe s/Str)
+   :new-channel-page NewChannelPage
    :channels Channels})

