@@ -6,7 +6,7 @@
                  [re-frame "0.6.0"]
                  [ring/ring-core "1.4.0"]
                  [adzerk/cljs-console "0.1.1" :scope "provided"]
-                 [tranchis/figwheel-sidecar "0.5.0-2"]
+                 [figwheel-sidecar "0.5.0-2"]
                  [com.andrewmcveigh/cljs-time "0.3.14"]
                  [com.lucasbradstreet/cljs-uuid-utils "1.0.2"]
                  [prismatic/schema "1.0.4"]
