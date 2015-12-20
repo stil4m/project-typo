@@ -27,7 +27,7 @@
  :authentication-complete
  [default-middleware
   (path [:login-form])
-  (after (fn [login-form] (dispatch [:login-success (assoc (:data login-form) :status :online)])))]
+  (after (fn [login-form] (dispatch [:login-success (assoc (:data login-form) :status :available)])))]
  (fn [db]
    (assoc db :authenticating false)))
 
