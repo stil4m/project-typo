@@ -17,7 +17,7 @@
 (defn message-list
   [messages]
   [:div.flex-auto.flex-basis-scroll
-   (into [:div.m3]
+   (into [:div.m2]
          (doall (map-indexed
                  (fn [i message]
                    [:div.h4.py1.mb1.py2.rounded

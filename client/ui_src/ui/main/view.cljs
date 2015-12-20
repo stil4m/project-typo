@@ -10,16 +10,17 @@
     [:li [:h1.h6.ml1.caps.light-blue.muted title]]]
    (doall (map
            (fn [item]
-             [:li.lh2.h5.flex.rounded.mb05 {:key (:id item)
-                                                 :class (when (= (:id item) (:id current-channel))
-                                                          "bg-dark-overlay")
-                                                    :on-click (actions/select-channel item)}
+             [:li.lh2.h5.flex.rounded.mb05.hover-bg-dark-orange.pointer.light-blue.hover-white
+              {:key (:id item)
+               :class (when (= (:id item) (:id current-channel))
+                        "bg-dark-overlay bold")
+               :on-click (actions/select-channel item)}
               [:span.ml1.status [:i.material-icons
                                  {:class (if (pos? (:unread item))
                                            "orange"
                                            "white")}
                                  "lens"]]
-              [:span.flex-auto.px1.truncate.light-blue (:name item)]
+              [:span.flex-auto.px1.truncate (:name item)]
               [:span.mr1.unread-messages.light-blue.muted.col-1.right-align (when (pos? (:unread item)) (:unread item))]])
            items))))
 
@@ -56,7 +57,7 @@
 (defn message-panel
   [current-channel]
   [:div.content.flex-auto.flex.flex-column.bg-white.pt2
-   [:div.py2.ml3.mr3.flex.border-bottom.border-color-silver
+   [:div.py2.ml2.mr2.flex.border-bottom.border-color-silver
     [:h1.h2.regular.flex-auto.dark-gray.m0.ml1 (:name current-channel)]
     [:i.material-icons.dark-gray.px1.mt05 "search"]
     [:i.material-icons.dark-gray.px1.mt05 "info_outline"]]
