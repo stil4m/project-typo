@@ -11,7 +11,6 @@
             [project-typo.channel :as channel]
             [project-typo.messages :as messages]
             [project-typo.transit :refer [decode-message encode-message]]
-            [rethinkdb.query :as r]
             [clj-time.coerce :as coerce])
   (:import [java.io ByteArrayInputStream ByteArrayOutputStream]))
 
@@ -114,7 +113,7 @@
                  (->> conn
                       (s/buffer 100)
                       ;; Only one message per second or 10 seconds worth if they were gone for 10 seconds
-                      (s/throttle 1 10))))))
+                      (s/throttle 5 15))))))
 
 (defn chat-handler
   [component req]
@@ -135,7 +134,6 @@
       (assoc component
              :instance instance
              :connections connections)))
-
   (stop [component]
     (log/info "Stopping server..")
     (when-let [instance (:instance component)]
@@ -145,3 +143,4 @@
 
 (defn create-server [port]
   (map->Server {:port port}))
+

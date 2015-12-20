@@ -1,5 +1,6 @@
 (ns ui.connection.actions
-  (:require [schema.core :as s :include-macros true]))
+  (:require [schema.core :as s :include-macros true]
+            [ui.schema.base :refer [UserIdentifier ChannelIdentifier Status]]))
 
 
 (defn data->action
@@ -20,6 +21,33 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Logout
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(s/defn logout
+  []
+  (data->action :logout {}))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Set Status
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(s/defschema SetStatus
+  {:status Status})
+
+(s/defn set-status
+  [d :- SetStatus]
+  (data->action :set-status d))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; List People
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(s/defn list-people
+  []
+  (data->action :list-people {}))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; List Channels
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (s/defn list-channels
@@ -31,7 +59,7 @@
 ;; Get Channel
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (s/defschema GetChannel
-  {:channel s/Str})
+  {:channel ChannelIdentifier})
 
 (s/defn get-channel
   [d :- GetChannel]
@@ -53,7 +81,7 @@
 ;; Create Conversation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (s/defschema CreateConversation
-  {:user s/Str})
+  {:user UserIdentifier})
 
 (s/defn create-conversation
   [d :- CreateConversation]
@@ -64,7 +92,7 @@
 ;; Join Channel
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (s/defschema JoinChannel
-  {:channel s/Str})
+  {:channel ChannelIdentifier})
 
 (s/defn join-channel
   [d :- JoinChannel]
@@ -75,8 +103,8 @@
 ;; Invite User
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (s/defschema InviteUser
-  {:channel s/Str
-   :user s/Str
+  {:channel ChannelIdentifier
+   :user UserIdentifier
    :admin s/Bool})
 
 (s/defn invite-user
@@ -88,8 +116,8 @@
 ;; Change Channel Name
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (s/defschema ChangeChannelName
-  {:channel s/Str
-   :name s/Str})
+  {:channel ChannelIdentifier
+   :name UserIdentifier})
 
 (s/defn change-channel-name
   [d :- ChangeChannelName]
@@ -101,7 +129,7 @@
 ;; Join Channel
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (s/defschema LeaveChannel
-  {:channel s/Str})
+  {:channel ChannelIdentifier})
 
 (s/defn leave-channel
   [d :- LeaveChannel]
@@ -112,7 +140,7 @@
 ;; Send Message
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (s/defschema SendMessage
-  {:channel s/Str
+  {:channel ChannelIdentifier
    :client-id s/Str
    :body s/Str})
 

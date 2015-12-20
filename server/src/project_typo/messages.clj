@@ -1,7 +1,8 @@
 (ns project-typo.messages
   (:require [project-typo.constants :as constants]
             [project-typo.db :as db]
-            [rethinkdb.query :as r]
+            [clj-time.core :as time]
+            [clj-time.coerce :as coerce]
             [schema.core :as schema]))
 
 (def MessageSchema
@@ -10,19 +11,20 @@
    :channel schema/Str})
 
 (defn- create-message [{:keys [db]} message]
-  (-> (r/table constants/messages-table)
-      (r/insert (assoc message :time (r/now)) {:return-changes true})
-      (r/run (db/connect db))
-      :changes
-      first
-      :new_val))
+  (let [time (coerce/to-long (time/now))
+        res @(db/create
+              db
+              (assoc message :time time))]
+
+    {:id (get-in res [:body :id])
+     :channel (:channel message)
+     :client-id (:client-id message)
+     :time time
+     :user (:user message)
+     :body (:body message)}))
 
 (defn- most-recent-messages [{:keys [db]} channel amount]
-  (-> (r/table constants/messages-table)
-      (r/filter (r/fn [row] (r/eq (r/get-field row "channel") channel)))
-      (r/order-by "time")
-      (r/limit amount)
-      (r/run (db/connect db))))
+  [])
 
 (defprotocol IMessageService
   (most-recent [this channel amount])

@@ -5,7 +5,15 @@
             [project-typo.channel :as channel]
             [project-typo.messages :as messages]
             [project-typo.db :as db]
+            [clojure.tools.logging :as log]
             [project-typo.server :as server]))
+
+(defonce
+  register-default-uncaught-exception-handler
+  (Thread/setDefaultUncaughtExceptionHandler
+   (reify Thread$UncaughtExceptionHandler
+     (uncaughtException [_ thread ex]
+       (log/error ex "Uncaught exception on" (.getName thread))))))
 
 (defn new-system [config]
   (->
