@@ -6,9 +6,7 @@
    :route {:history []
            :active nil
            :future []}
-   :user {:username "stil4m"
-          :full-name "Mats Stijlaart"
-          :status :online}
+   :user nil
    :login-form {:authenticating false
                 :loading false
                 :error nil
