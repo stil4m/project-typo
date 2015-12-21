@@ -14,25 +14,27 @@
   [n]
   [:span.muted.light (str n " participants")])
 
-(defn person-item
-  [person]
+(defn item
+  [{:keys [header footer action]}]
   [:div.flex.m05.p1.rounded.hover-bg-light-gray.hover-border.hover-border-color-silver.hover-border.pointer
-   {:on-click (actions/select-person person)}
+   {:on-click action}
    [avatar]
    [:div.flex-auto
     [:div.flex.flex-column
-     [:div.dark-gray.bold.lh7-8.capitalize.mt-nudge1 (:full-name person)]
-     [:div.gray.flex-auto.mt05.lh7-8.h45 (status-text (:status person))]]]])
+     [:div.dark-gray.bold.lh7-8.capitalize.mt-nudge1 header]
+     [:div.gray.flex-auto.mt05.lh7-8.h45 footer]]]])
+
+(defn person-item
+  [person]
+  [item {:header (:full-name person)
+         :footer (status-text (:status person))
+         :action (actions/select-person person)}])
 
 (defn room-item
   [room]
-  [:div.flex.m05.p1.rounded.hover-bg-light-gray.hover-border.hover-border-color-silver.hover-border.pointer
-   {:on-click (actions/select-room room)}
-   [avatar]
-   [:div.flex-auto
-    [:div.flex.flex-column
-     [:div.dark-gray.bold.lh7-8.capitalize.mt-nudge1 (:name room)]
-     [:div.gray.flex-auto.mt05.lh7-8.h45 (participants-text (:participants room))]]]])
+  [item {:header (:name room)
+         :footer (participants-text (:participants room))
+         :action (actions/select-room room)}])
 
 (defn people-tab
   [people]
@@ -52,6 +54,26 @@
             [:div [room-item room]])
           rooms))])
 
+(defn channels-column
+  [title items]
+  [:div.col-6.left {:style {:height "100%" :position :relative}}
+   [:div.border-bottom.bottom-color-silver.mr1.ml1
+    [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} title]]
+   [:div.mr1.ml1.overflow-scroll.absolute {:style {:top "45px" :right 0 :left 0 :bottom 0}}
+    items]
+   #_[:div.border-bottom.bottom-color-silver.mr25
+      [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "People"]]
+   #_[:div.overflow-scroll {:style {:max-height "100%"}}
+      #_[people-tab (:people @available-channels)]]
+   #_[:div.flex.flex-column.flex-stretch
+      [:div.flex-none.border-bottom.bottom-color-silver.mr25
+       [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "People"]]
+      [:div.mr3
+       [:div.flex.flex-stretch.flex-column
+        [:div.flex-auto "b"]]
+       #_[:div {:style {:background :blue :height "100%" :width "100%"}}
+          "abc"]
+       ]]])
 (defn render
   []
   (fn []
@@ -59,27 +81,45 @@
       (.log js/console (str "ABC"))
       (.log js/console (str @available-channels))
       [:div.bg-white {:style {:width "664px" :height "600px" :margin "100px auto" :padding "50px" :border "1px solid #ccc" :border-radius "5px"}}
-        [:div.flex-auto.clearfix
-          [:i.material-icons.small-icon.px05.absolute.gray.ml1.mt-nudge1 "search"]
-          [:input.border.border-color-silver.rounded.left.col-5
-            {:type :text
-             :style {:padding-left "36px"}
-             :on-change actions/change-channel-filter
-             :placeholder "Search people & rooms"}]
-          [:button.px3.btn.btn-primary.pull-right.bg-dark-blue.ls2.right.h5
-           {:type :submit
-            :on-click actions/create-channel}
-           "New Room"]]
-        [:div.flex.mt3
-          [:div.flex-grow.mr3
-            [:div.border-bottom.bottom-color-silver.ml15
-             [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "People"]]]
-          [:div.flex-grow.ml35
-            [:div.border-bottom.bottom-color-silver.ml15
-             [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "Rooms"]]]]
-        [:div.flex
-            {:style {:height "537px" :overflow-y "scroll"}}
-          [:div.flex-grow.mr3
-            [people-tab (:people @available-channels)]]
-          [:div.flex-grow
-            [rooms-tab (:rooms @available-channels)]]]])))
+       [:div.clearfix.ml1.mr1
+        [:i.material-icons.small-icon.px05.absolute.gray.ml1.mt-nudge1 "search"]
+        [:input.border.border-color-silver.rounded.left.col-5
+         {:type :text
+          :style {:padding-left "36px"}
+          :on-change actions/change-channel-filter
+          :placeholder "Search people & rooms"}]
+        [:button.px3.btn.btn-primary.pull-right.bg-dark-blue.ls2.right.h5
+         {:type :submit
+          :on-click actions/create-channel}
+         "New Room"]]
+       [channels-column
+        "People"
+        [people-tab (:people @available-channels)]]
+       [channels-column
+        "Rooms"
+        [rooms-tab (:rooms @available-channels)]]
+       #_[:div.col-6.left {:style {:height "100%" :position :relative}}
+        [:div.flex-none.border-bottom.bottom-color-silver.mr25
+         [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "People"]]
+        [:div.overflow-scroll.absolute {:style {:top "45px" :right 0 :left 0 :bottom 0}}
+         [people-tab (:people @available-channels)]]
+        #_[:div.border-bottom.bottom-color-silver.mr25
+           [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "People"]]
+        #_[:div.overflow-scroll {:style {:max-height "100%"}}
+           #_[people-tab (:people @available-channels)]]
+        #_[:div.flex.flex-column.flex-stretch
+           [:div.flex-none.border-bottom.bottom-color-silver.mr25
+            [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "People"]]
+           [:div.mr3
+            [:div.flex.flex-stretch.flex-column
+             [:div.flex-auto "b"]]
+            #_[:div {:style {:background :blue :height "100%" :width "100%"}}
+               "abc"]
+            ]]]
+       #_[:div.mb2.mt1 {:style {:height "100%"}}
+
+        #_[:div.col-6.mt3
+         [:div.border-bottom.bottom-color-silver.mr25
+          [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "Rooms"]]
+         [:div.flex-grow.mr3
+          [rooms-tab (:rooms @available-channels)]]]]])))
