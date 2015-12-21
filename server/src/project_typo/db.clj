@@ -9,6 +9,8 @@
 (def views {:_id "_design/typo"
             :views {:all-channels
                     {:map "function(doc) {if (doc.name) {emit(doc._id, doc);}}"}
+                    :all-users
+                    {:map "function(doc) {if (doc.type == 'user') {emit(doc._id,doc);}}"}
                     :by-channel
                     {:map "function(doc) {\n\tif (doc.channel && doc.time) {\n\t\tvar date = new Date(doc.time);\n\t\temit([date.getTime(), doc.channel], doc)\n\t}\n}\n"}}
             :updates {:upsert-doc

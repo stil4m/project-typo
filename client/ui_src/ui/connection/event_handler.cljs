@@ -24,6 +24,9 @@
 (defmethod event :all-channels [message]
   (dispatch [:fetched-all-channels (:data message)]))
 
+(defmethod event :all-people [message]
+  (dispatch [:fetched-all-people (:data message)]))
+
 (defmethod event :heartbeat [message]
   (log/debug "Heartbeat..."))
 

@@ -56,7 +56,7 @@
    :status Status})
 
 (def Person
-  {:id s/Str
+  {:username s/Str
    :full-name s/Str
    :status Status})
 

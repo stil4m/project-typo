@@ -10,14 +10,10 @@
    :login-form {:authenticating false
                 :loading false
                 :error nil
-                :data {:username "matstijl"
-                       :full-name "Mats Stijlaart"}}
+                :data {:username ""
+                       :full-name ""}}
    :new-channel-page {:query ""}
-   :people [{:id "matstijl" :full-name "Mats Stijlaart" :status :available}
-            {:id "mitkuijp" :full-name "Tomas Theunissen" :status :available}
-            {:id "tomtheun" :full-name "Mitchel Kuijpers" :status :busy}
-            {:id "maaarts" :full-name "Maarten Arts" :status :available}
-            {:id "guest1234" :full-name "Philip Geubels" :status :available}]
+   :people []
    :current-channel nil
    :subscribed-channels []
    :channels {}})

@@ -26,6 +26,10 @@
    ;Channels
             [ui.channels.handlers]
 
+   ;People
+            [ui.people.handlers]
+            [ui.people.subs]
+
    ;New Channels
             [ui.new-channels.subs]
             [ui.new-channels.handlers]

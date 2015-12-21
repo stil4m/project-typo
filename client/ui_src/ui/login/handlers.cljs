@@ -21,8 +21,10 @@
 (register-handler
  :fetch-all-channels
  [default-middleware
-  (do-write actions/list-channels)]
+  (do-write actions/list-channels)
+  (do-write actions/list-people)]
  identity)
+
 
 (register-handler
  :authentication-complete

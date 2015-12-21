@@ -3,53 +3,6 @@
   (:require [re-frame.core :refer [register-sub subscribe]]
             [clojure.string :as str]))
 
-(def people
-  [{:username "zz"
-    :full-name "ZZ top"
-    :status :available}
-   {:username "aa"
-    :full-name "Albert Aronson"
-    :status :available}
-   {:username "bb"
-    :full-name "Bert Boos"
-    :status :busy}
-   {:username "cc"
-    :full-name "Claudia Cornelissen"
-    :status :offline}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}
-   {:username "matstijl"
-    :full-name "Mats Stijlaart"
-    :status :available}])
-
 (defn match-by-prop
   [prop query]
   (fn [item]
@@ -88,10 +41,11 @@
  :available-channels
  (fn [db]
    (let [query (subscribe [:new-channel-filter-query])
+         people (subscribe [:people/other-people])
          vs (vec (vals (:channels @db)))
-         grouped (split-by-bool-prop (concat vs people)     ;TODO
+         grouped (split-by-bool-prop vs
                                 :room
                                 :rooms
                                 :people)]
-     (reaction {:people (vec (sort-and-filter-by-prop (:people grouped) :full-name @query))
+     (reaction {:people (vec (sort-and-filter-by-prop @people :full-name @query))
                 :rooms (vec (sort-and-filter-by-prop (:rooms grouped) :name @query))}))))

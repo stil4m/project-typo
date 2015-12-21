@@ -63,7 +63,7 @@
           [:i.material-icons.small-icon.px05.absolute.gray.ml1.mt-nudge1 "search"]
           [:input.border.border-color-silver.rounded.left.col-5
             {:type :text
-             :style {:padding-left "36px;"}
+             :style {:padding-left "36px"}
              :on-change actions/change-channel-filter
              :placeholder "Search people & rooms"}]
           [:button.px3.btn.btn-primary.pull-right.bg-dark-blue.ls2.right.h5

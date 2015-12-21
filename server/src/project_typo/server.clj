@@ -44,6 +44,12 @@
                                   {:keys [channel-id]}]
   (bus/downstream event-bus channel-id))
 
+(defmethod action :list-people list-people [{:keys [conn]}
+                                            {:keys [user-service]}
+                                            _]
+  (s/put! conn (encode-message {:event :all-people
+                                :data {:people (users/list-all user-service)}})))
+
 (defmethod action :list-channels list-channels [{:keys [conn]}
                                   {:keys [channel-service]}
                                   _]
