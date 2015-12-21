@@ -14,7 +14,7 @@
   (schema/validate ChannelSchema channel)
   (let [res @(db/create
               (:db this)
-              channel)]
+              (assoc channel :type :channel))]
 
     {:id (get-in res [:body :id])
      :name (:name channel)}))

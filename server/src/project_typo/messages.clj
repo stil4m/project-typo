@@ -14,7 +14,8 @@
   (let [time (coerce/to-long (time/now))
         res @(db/create
               db
-              (assoc message :time time))]
+              (assoc message :type :message
+                             :time time))]
 
     {:id (get-in res [:body :id])
      :channel (:channel message)
