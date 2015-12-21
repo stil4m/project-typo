@@ -21,7 +21,7 @@
 (defmethod action :create-channel create-channel [{:keys [username conn]}
                                    {:keys [event-bus channel-service]}
                                    msg]
-  (let [res (channel/create channel-service {:name (get-in msg [:data :name])} username)]
+  (let [res (channel/create channel-service (:data msg) username)]
     (log/info "created channel" res)
     (s/put! conn (encode-message {:event :channel-created
                                   :data res}))))

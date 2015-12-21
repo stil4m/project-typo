@@ -5,8 +5,10 @@
             [schema.core :as schema]
             [clojure.tools.logging :as log]))
 
-(def ChannelSchema
-  {:name schema/Str})
+(def CreateChannelSchema
+  {:name schema/Str
+   :room schema/Bool
+   :members [schema/Str]})
 
 (defn result->channel [res]
   {:id (:id res)
@@ -14,17 +16,18 @@
    :private (get-in res [:value :private])
    :members (get-in res [:value :members])})
 
-(defn- create-channel [this channel user]
-  (schema/validate ChannelSchema channel)
-  (let [res @(db/create
+(defn- create-channel [this create-channel-data user]
+  (schema/validate CreateChannelSchema create-channel-data)
+  (let [members (vec (conj (set (:members create-channel-data)) user))
+        res @(db/create
               (:db this)
-              (assoc channel :type :channel
-                             :private true
-                             :members [user]))]
+              (assoc create-channel-data :type :channel
+                                         :private true
+                                         :members members))]
     {:id (get-in res [:body :id])
-     :name (:name channel)
+     :name (:name create-channel-data)
      :private true
-     :members [user]}))
+     :members members}))
 
 (defn- list-channels [this]
   @(d/chain (db/get-view (:db this) "all-channels" {})
@@ -46,7 +49,7 @@
   (map->ChannelService {}))
 
 (comment
-  (create
-   (get-in reloaded.repl/system [:channel-service]) {:name "hoi"})
-  (list-channels
-   (get-in reloaded.repl/system [:channel-service])))
+ (create
+  (get-in reloaded.repl/system [:channel-service]) {:name "hoi"})
+ (list-channels
+  (get-in reloaded.repl/system [:channel-service])))

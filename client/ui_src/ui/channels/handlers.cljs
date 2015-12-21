@@ -8,7 +8,7 @@
 (register-handler
  :create-channel
  [default-middleware
-  (do-write #(actions/create-channel {:name (:name %)}))]
+  (do-write #(actions/create-channel %))]
  identity)
 
 (register-handler

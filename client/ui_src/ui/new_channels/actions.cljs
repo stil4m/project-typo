@@ -18,7 +18,9 @@
 (defn create-channel
   [e]
   (.preventDefault e)
-  (dispatch [:create-channel {:name (str "Room " (time/timestamp->time (js/Date.)))}])
+  (dispatch [:create-channel {:name (str "Room " (time/timestamp->time (js/Date.)))
+                              :room true
+                              :members []}])
   (route-util/set-route routes/main))
 
 
