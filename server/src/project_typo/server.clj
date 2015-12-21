@@ -10,6 +10,7 @@
             [manifold.stream :as stream]
             [project-typo.channel :as channel]
             [project-typo.messages :as messages]
+            [project-typo.users :as users]
             [project-typo.transit :refer [decode-message encode-message]]
             [clj-time.coerce :as coerce])
   (:import [java.io ByteArrayInputStream ByteArrayOutputStream]))
@@ -88,6 +89,8 @@
                        {:event :authentication
                         :data {:result (if authentication-call? :ok :failed)}}))
 
+              (users/update-user (:user-service component) (:data authentication))
+
               (if (not authentication-call?)
                 (s/close! conn))
 
@@ -122,7 +125,7 @@
                 non-websocket-request
                 (start-connection component conn))))
 
-(defrecord Server [port instance channel-service message-service event-bus]
+(defrecord Server [port instance channel-service user-service message-service event-bus]
   component/Lifecycle
   (start [component]
     (log/info "Starting server on port " port)

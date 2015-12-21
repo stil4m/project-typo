@@ -4,6 +4,7 @@
             [manifold.bus :as bus]
             [project-typo.channel :as channel]
             [project-typo.messages :as messages]
+            [project-typo.users :as users]
             [project-typo.db :as db]
             [clojure.tools.logging :as log]
             [project-typo.server :as server]))
@@ -20,10 +21,12 @@
    (component/system-map
     :channel-service (channel/create-channel-service)
     :message-service (messages/create-message-service)
+    :user-service (users/create-user-service)
     :server (server/create-server (:port config 5333))
     :event-bus (bus/event-bus)
     :db (db/create-database (:database config)))
    (component/system-using
-    {:server [:channel-service :event-bus :message-service]
+    {:server [:channel-service :event-bus :user-service :message-service]
      :message-service [:db]
+     :user-service [:db]
      :channel-service [:db]})))

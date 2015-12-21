@@ -6,13 +6,13 @@
             [cheshire.core :as json]
             [project-typo.constants :as constants]))
 
-
-
 (def views {:_id "_design/typo"
             :views {:all-channels
                     {:map "function(doc) {if (doc.name) {emit(doc._id, doc);}}"}
                     :by-channel
-                    {:map "function(doc) {\n\tif (doc.channel && doc.time) {\n\t\tvar date = new Date(doc.time);\n\t\temit([date.getTime(), doc.channel], doc)\n\t}\n}\n"}}})
+                    {:map "function(doc) {\n\tif (doc.channel && doc.time) {\n\t\tvar date = new Date(doc.time);\n\t\temit([date.getTime(), doc.channel], doc)\n\t}\n}\n"}}
+            :updates {:upsert-doc
+                      "function (doc, req) {\n    var reqBody = JSON.parse(req.body);\n    if (!doc) {\n        return [reqBody, {'json': {'status': 'ok'}}]\n    } else {\n        delete reqBody._id;\n        Object.keys(reqBody).forEach(function(k) {\n            doc[k] = reqBody[k];\n        });\n        return [doc, {'json': {'status': 'ok'}}];\n    }\n}"}})
 
 (def default-data-type "application/json")
 
@@ -25,7 +25,8 @@
 
 (defprotocol IDatabase
   (get-view [this view query-params] "get a view")
-  (create [this doc] "Method to create a document"))
+  (create [this doc] "Method to create a document")
+  (upsert [this doc] "Updates a document by its id"))
 
 (defn create-views [uri]
   (http/put
@@ -34,8 +35,8 @@
 
 (defn get-db-info [uri]
   (d/catch
-      (http/get uri configuration-defaults)
-      (fn [_] nil)))
+   (http/get uri configuration-defaults)
+   (fn [_] nil)))
 
 (defn create-db [uri]
   (d/chain
@@ -47,6 +48,11 @@
               (if (nil? db)
                 (create-db uri)
                 db)))
+
+(defn perform-upsert
+  [this doc]
+  (http/put (str (:uri this) "/_design/typo/_update/upsert-doc/" (:_id doc))
+            {:body (json/encode doc)}))
 
 (defrecord Database [host port token auth-key db]
   component/Lifecycle
@@ -64,6 +70,8 @@
     (http/get (str (:uri this) "/_design/typo/_view/" view)
               (merge
                configuration-defaults)))
+  (upsert [this doc]
+    (perform-upsert this doc))
   (create [this doc]
     (log/info this)
     (http/post (:uri this) (merge
@@ -74,5 +82,5 @@
   (map->Database config))
 
 (comment
-  @(get-view (get-in reloaded.repl/system [:db]) "all-channels" {}))
+ @(get-view (get-in reloaded.repl/system [:db]) "all-channels" {}))
 
