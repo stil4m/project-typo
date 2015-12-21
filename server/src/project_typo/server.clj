@@ -18,10 +18,10 @@
 
 (defmulti action (fn [conn component m] (:action m)))
 
-(defmethod action :create-channel create-channel [{:keys [conn]}
+(defmethod action :create-channel create-channel [{:keys [username conn]}
                                    {:keys [event-bus channel-service]}
                                    msg]
-  (let [res (channel/create channel-service {:name (get-in msg [:data :name])})]
+  (let [res (channel/create channel-service {:name (get-in msg [:data :name])} username)]
     (log/info "created channel" res)
     (s/put! conn (encode-message {:event :channel-created
                                   :data res}))))

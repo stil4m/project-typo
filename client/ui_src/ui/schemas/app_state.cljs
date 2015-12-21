@@ -41,6 +41,7 @@
   {:id ChannelIdentifier
    :name s/Str
    :room s/Bool
+   :private s/Bool
    :unread s/Int
    :messages [PersistedMessage]
    :members [UserIdentifier]
