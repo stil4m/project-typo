@@ -60,20 +60,8 @@
    [:div.border-bottom.bottom-color-silver.mr1.ml1
     [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} title]]
    [:div.mr1.ml1.overflow-scroll.absolute {:style {:top "45px" :right 0 :left 0 :bottom 0}}
-    items]
-   #_[:div.border-bottom.bottom-color-silver.mr25
-      [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "People"]]
-   #_[:div.overflow-scroll {:style {:max-height "100%"}}
-      #_[people-tab (:people @available-channels)]]
-   #_[:div.flex.flex-column.flex-stretch
-      [:div.flex-none.border-bottom.bottom-color-silver.mr25
-       [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "People"]]
-      [:div.mr3
-       [:div.flex.flex-stretch.flex-column
-        [:div.flex-auto "b"]]
-       #_[:div {:style {:background :blue :height "100%" :width "100%"}}
-          "abc"]
-       ]]])
+    items]])
+
 (defn render
   []
   (fn []
@@ -97,29 +85,4 @@
         [people-tab (:people @available-channels)]]
        [channels-column
         "Rooms"
-        [rooms-tab (:rooms @available-channels)]]
-       #_[:div.col-6.left {:style {:height "100%" :position :relative}}
-        [:div.flex-none.border-bottom.bottom-color-silver.mr25
-         [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "People"]]
-        [:div.overflow-scroll.absolute {:style {:top "45px" :right 0 :left 0 :bottom 0}}
-         [people-tab (:people @available-channels)]]
-        #_[:div.border-bottom.bottom-color-silver.mr25
-           [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "People"]]
-        #_[:div.overflow-scroll {:style {:max-height "100%"}}
-           #_[people-tab (:people @available-channels)]]
-        #_[:div.flex.flex-column.flex-stretch
-           [:div.flex-none.border-bottom.bottom-color-silver.mr25
-            [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "People"]]
-           [:div.mr3
-            [:div.flex.flex-stretch.flex-column
-             [:div.flex-auto "b"]]
-            #_[:div {:style {:background :blue :height "100%" :width "100%"}}
-               "abc"]
-            ]]]
-       #_[:div.mb2.mt1 {:style {:height "100%"}}
-
-        #_[:div.col-6.mt3
-         [:div.border-bottom.bottom-color-silver.mr25
-          [:h2.h4.regular.dark-gray {:style {:letter-spacing ".5px"}} "Rooms"]]
-         [:div.flex-grow.mr3
-          [rooms-tab (:rooms @available-channels)]]]]])))
+        [rooms-tab (:rooms @available-channels)]]])))
