@@ -23,18 +23,26 @@
                               :members []}])
   (route-util/set-route routes/main))
 
-
-(defn select-person
-  [person]
-  (fn [e]
-    (.preventDefault e)
-    (.log js/console (str "TODO | Selected person: " person))
-    nil))
+(defn join-channel
+  [channel]
+  (dispatch [:join-channel channel])
+  (dispatch [:set-active-channel channel]))
 
 (defn select-room
   [room]
   (fn [e]
     (.preventDefault e)
     (route-util/set-route routes/main)
-    (dispatch [:join-channel room])
-    (dispatch [:set-active-channel room])))
+    (join-channel room)))
+
+(defn select-person
+  [person]
+  (fn [e]
+    (.preventDefault e)
+    (if (:channel person)
+      (join-channel (:channel person))
+      (dispatch [:create-channel {:name (str "Conversation " (time/timestamp->time (js/Date.)))
+                                  :room false
+                                  :members [(:username person)]}]))
+    (route-util/set-route routes/main)
+    nil))

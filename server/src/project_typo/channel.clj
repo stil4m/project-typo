@@ -5,6 +5,13 @@
             [schema.core :as schema]
             [clojure.tools.logging :as log]))
 
+(def ChannelSchema
+  {:id schema/Str
+   :name schema/Str
+   :room schema/Bool
+   :private schema/Bool
+   :members [schema/Str]})
+
 (def CreateChannelSchema
   {:name schema/Str
    :room schema/Bool
@@ -14,6 +21,7 @@
   {:id (:id res)
    :name (get-in res [:value :name])
    :private (get-in res [:value :private])
+   :room (get-in res [:value :room])
    :members (get-in res [:value :members])})
 
 (defn- create-channel [this create-channel-data user]
@@ -26,18 +34,21 @@
                                          :members members))]
     {:id (get-in res [:body :id])
      :name (:name create-channel-data)
+     :room (:room create-channel-data)
      :private true
      :members members}))
 
-(defn has-user
+(defn user-can-access
   [user]
-  #(contains? (set (:members %)) user))
+  #(or
+    (not (:private %))
+    (contains? (set (:members %)) user)))
 
 (defn- list-channels [this user]
   @(d/chain (db/get-view (:db this) "all-channels" {})
             #(get-in % [:body :rows])
             #(map result->channel %)
-            #(filter (has-user user) %)))                   ;TODO Solve in DB
+            #(filter (user-can-access user) %)))                   ;TODO Solve in DB
 
 (defprotocol Channel
   (list-all [this user])

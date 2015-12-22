@@ -66,8 +66,6 @@
   []
   (fn []
     (let [available-channels (subscribe [:available-channels])]
-      (.log js/console (str "ABC"))
-      (.log js/console (str @available-channels))
       [:div.bg-white {:style {:width "664px" :height "600px" :margin "100px auto" :padding "50px" :border "1px solid #ccc" :border-radius "5px"}}
        [:div.clearfix.ml1.mr1
         [:i.material-icons.small-icon.px05.absolute.gray.ml1.mt-nudge1 "search"]

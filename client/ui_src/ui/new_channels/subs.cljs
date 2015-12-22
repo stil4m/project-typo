@@ -37,15 +37,24 @@
      (update-in m [(if (get i prop) true-key false-key)] conj i))
    {}
    list))
+
 (register-sub
  :available-channels
  (fn [db]
-   (let [query (subscribe [:new-channel-filter-query])
+   (let [current-user (subscribe [:current-user])
+         query (subscribe [:new-channel-filter-query])
          people (subscribe [:people/other-people])
          vs (vec (vals (:channels @db)))
          grouped (split-by-bool-prop vs
-                                :room
-                                :rooms
-                                :people)]
-     (reaction {:people (vec (sort-and-filter-by-prop @people :full-name @query))
+                                     :room
+                                     :rooms
+                                     :people)
+         conversation-map (into {}
+                                (map
+                                 (fn [channel] [(first (filter #(not= (:username @current-user) %) (:members channel))) channel])
+                                 (:people grouped)))]
+     (reaction {:people (vec
+                         (map
+                          #(assoc % :channel (get conversation-map (:username %)))
+                          (sort-and-filter-by-prop @people :full-name @query)))
                 :rooms (vec (sort-and-filter-by-prop (:rooms grouped) :name @query))}))))

@@ -54,6 +54,7 @@
 
 (defn side-bar
   [current-channel channels-state current-user]
+  (.log js/console (str channels-state))
   [:nav.flex.flex-none.flex-column.contacts-sidebar.bg-dark-blue {:style {:padding "5px"}}
    [:div.flex.flex-row
     [:button.mt-specific-35.mr1.ml1.flex-auto.h5.btn.btn-primary.dark-gray.bg-light-gray {:on-click (create-channel "My room")} "New Chat"]]

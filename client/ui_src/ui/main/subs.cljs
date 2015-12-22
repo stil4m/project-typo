@@ -13,18 +13,31 @@
    (reaction (:subscribed-channels @db))))
 
 (register-sub
- :room-channels
+ :open-channels
  (fn [db]
    (let [channel-map (subscribe [:channel-map])
          open-channels (subscribe [:subscribed-channels])]
      (reaction (mapv #(get @channel-map %) @open-channels)))))
 
 (register-sub
- :channels-state
+ :open-rooms
  (fn [db]
-   (let [room-channels (subscribe [:room-channels])]
+   (let [open-channels (subscribe [:open-channels])]
+     (reaction (filterv #(:room %) @open-channels)))))
+
+(register-sub
+ :open-conversations
+ (fn [db]
+   (let [open-channels (subscribe [:open-channels])]
+     (reaction (filterv #(not (:room %)) @open-channels)))))
+
+(register-sub
+ :open-channels-state
+ (fn [db]
+   (let [room-channels (subscribe [:open-rooms])
+         open-conversations (subscribe [:open-conversations])]
      (reaction {:channels @room-channels
-                :people ()}))))
+                :people @open-conversations}))))
 
 (register-sub
  :current-channel
@@ -35,8 +48,8 @@
 (register-sub
  :total-unread
  (fn [_]
-   (let [room-channels (subscribe [:room-channels])]
-     (reaction (reduce (fn [cnt v] (+ cnt (:unread v))) 0 @room-channels)))))
+   (let [open-rooms (subscribe [:open-rooms])]
+     (reaction (reduce (fn [cnt v] (+ cnt (:unread v))) 0 @open-rooms)))))
 
 (def total-unread (subscribe [:total-unread]))
 (run!

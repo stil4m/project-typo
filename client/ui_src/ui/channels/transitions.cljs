@@ -3,7 +3,9 @@
 
 (defn enrich-channel
   [channel]
-  (assoc channel :room (get channel :queue true)            ; TODO, temporarily added to be schema compliant (should be set when starting a room/conversation)
+  (.log js/console "Enrich")
+  (.log js/console (str channel))
+  (assoc channel :room (get channel :room true)
                  :unread 0
                  :queue []
                  :messages []))
