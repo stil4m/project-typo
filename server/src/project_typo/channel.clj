@@ -29,19 +29,24 @@
      :private true
      :members members}))
 
-(defn- list-channels [this]
+(defn has-user
+  [user]
+  #(contains? (set (:members %)) user))
+
+(defn- list-channels [this user]
   @(d/chain (db/get-view (:db this) "all-channels" {})
             #(get-in % [:body :rows])
-            #(map result->channel %)))
+            #(map result->channel %)
+            #(filter (has-user user) %)))                   ;TODO Solve in DB
 
 (defprotocol Channel
-  (list-all [this])
+  (list-all [this user])
   (create [this channel user]))
 
 (defrecord ChannelService [db]
   Channel
-  (list-all [this]
-    (list-channels this))
+  (list-all [this user]
+    (list-channels this user))
   (create [this channel user]
     (create-channel this channel user)))
 

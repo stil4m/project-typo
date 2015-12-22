@@ -50,11 +50,12 @@
   (s/put! conn (encode-message {:event :all-people
                                 :data {:people (users/list-all user-service)}})))
 
-(defmethod action :list-channels list-channels [{:keys [conn]}
+(defmethod action :list-channels list-channels [context
                                   {:keys [channel-service]}
                                   _]
-  (s/put! conn (encode-message {:event :all-channels
-                                :data {:channels (channel/list-all channel-service)}})))
+  (let [{:keys [conn username]} context]
+    (s/put! conn (encode-message {:event :all-channels
+                                  :data {:channels (channel/list-all channel-service username)}}))))
 
 (defmethod action :send-message message [{:keys [conn username]}
                             {:keys [event-bus message-service]}
