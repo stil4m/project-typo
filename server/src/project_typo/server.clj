@@ -23,8 +23,11 @@
                                    msg]
   (let [res (channel/create channel-service (:data msg) username)]
     (log/info "created channel" res)
-    (s/put! conn (encode-message {:event :channel-created
-                                  :data res}))))
+    (log/info "Publish created to all!" (:members res))
+    (doall (map
+            #(bus/publish! event-bus % (encode-message {:event :channel-created
+                                                          :data res}))
+            (:members res)))))
 
 (defmethod action :join-channel join-channel [{:keys [subscriptions conn]}
                                  {:keys [event-bus message-service]}
@@ -86,7 +89,9 @@
                authentication (decode-message msg)
                authentication-call? (= :authenticate (:action authentication))
                connections (:connections component)
-               context {:username (get-in authentication [:data :username])
+               event-bus (:event-bus component)
+               username (get-in authentication [:data :username])
+               context {:username username
                         :full-name (get-in authentication [:data :full-name])
                         :conn conn
                         :subscriptions (atom {})}]
@@ -113,6 +118,18 @@
                 (s/connect
                  (s/periodically 10000 #(encode-message {:event :heartbeat}))
                  conn #_(s/buffer 100 conn)
+                 {:timeout 1e4})
+
+                ;; Subscribe for messages directed to all
+                (s/connect
+                 (bus/subscribe event-bus :all)
+                 conn
+                 {:timeout 1e4})
+
+                ;; Subscribe for messages directed to the user
+                (s/connect
+                 (bus/subscribe event-bus (get-in authentication [:data :username]))
+                 conn
                  {:timeout 1e4})
 
                 ;; Consume messsages from connected client
