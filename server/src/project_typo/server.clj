@@ -53,12 +53,21 @@
   (s/put! conn (encode-message {:event :all-people
                                 :data {:people (users/list-all user-service)}})))
 
-(defmethod action :list-channels list-channels [context
-                                  {:keys [channel-service]}
-                                  _]
-  (let [{:keys [conn username]} context]
+(defmethod action :list-channels list-channels [context component _]
+  (let [{:keys [channel-service channel-access]} component
+        {:keys [conn username]} context
+        channels (channel/list-all channel-service username)]
+
+    ;Adds missing channels to channel-access
+    (reduce
+     (fn [access channel]
+       (when (not (get @access (:id channel)))
+         (swap! access assoc (:id channel) (:members channel)))
+       access)
+     channel-access
+     channels)
     (s/put! conn (encode-message {:event :all-channels
-                                  :data {:channels (channel/list-all channel-service username)}}))))
+                                  :data {:channels channels}}))))
 
 (defmethod action :send-message message [{:keys [conn username]}
                             {:keys [event-bus message-service]}
@@ -154,8 +163,10 @@
   (start [component]
     (log/info "Starting server on port " port)
     (let [connections (atom {})
+          channel-access (atom {})
           instance (http/start-server (partial chat-handler (assoc component
-                                                             :connections connections)) {:port port})]
+                                                             :connections connections
+                                                             :channel-access channel-access)) {:port port})]
       (assoc component
              :instance instance
              :connections connections)))
