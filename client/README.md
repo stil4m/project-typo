@@ -24,7 +24,7 @@ lein trampoline cljsbuild auto electron-dev
 lein trampoline figwheel frontend-dev
 electron .
 lein less auto
-````
+```
 
 ##Release
 
