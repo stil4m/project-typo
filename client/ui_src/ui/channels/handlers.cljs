@@ -5,16 +5,21 @@
             [ui.channels.transitions :as transitions]
             [ui.connection.actions :as actions]))
 
+[default-middleware
+ (after (fn [db [created-channel]] (dispatch [:join-channel created-channel])))]
+
+
 (register-handler
  :create-channel
  [default-middleware
-  (do-write #(actions/create-channel %))]
+  (do-write #(actions/create-channel %) #(let [data (:data %)]
+                                         (dispatch [:join-channel data])
+                                         (dispatch [:set-active-channel data])))]
  identity)
 
 (register-handler
  :created-channel
- [default-middleware
-  (after (fn [db [created-channel]] (dispatch [:join-channel created-channel])))]
+ [default-middleware]
  transitions/add-created-channel)
 
 ;TODO We should add a joined-channels for the initial join

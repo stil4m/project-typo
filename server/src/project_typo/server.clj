@@ -15,32 +15,44 @@
             [clj-time.coerce :as coerce])
   (:import [java.io ByteArrayInputStream ByteArrayOutputStream]))
 
+(defn update-channel-access
+  [channel-access channels]
+  (reduce
+   (fn [access channel]
+     (when (not (get @access (:id channel)))
+       (swap! access assoc (:id channel) (:members channel)))
+     access)
+   channel-access
+   channels))
+
+(defn publish-to
+  ([event-bus members event data]
+   (publish-to event-bus members event data nil))
+  ([event-bus members event data message-id]
+   ;TODO At this point it would be great to have a plugin point
+   (let [message (encode-message {:event event :data data :message-id message-id})]
+     (doall (map
+             #(bus/publish! event-bus % message)
+             members)))))
 
 (defmulti action (fn [conn component m] (:action m)))
 
 (defmethod action :create-channel create-channel [{:keys [username conn]}
-                                   {:keys [event-bus channel-service]}
+                                   {:keys [event-bus channel-access channel-service]}
                                    msg]
   (let [res (channel/create channel-service (:data msg) username)]
     (log/info "created channel" res)
-    (log/info "Publish created to all!" (:members res))
-    (doall (map
-            #(bus/publish! event-bus % (encode-message {:event :channel-created
-                                                          :data res}))
-            (:members res)))))
+    (update-channel-access channel-access [res])
+    (publish-to event-bus (:members res) :channel-created res (:message-id msg))))
 
 (defmethod action :join-channel join-channel [{:keys [subscriptions conn]}
-                                 {:keys [event-bus message-service]}
-                                 {:keys [data]}]
-  (let [channel (:channel data)]
-    (s/connect
-     (bus/subscribe event-bus channel)
-     conn
-     {:timeout 1e4})
-    (bus/publish! event-bus channel (encode-message
-                                     {:data {:most-recent-messages (messages/most-recent message-service channel 100)
-                                             :channel channel}
-                                      :event :joined-channel}))))
+                                 {:keys [event-bus channel-access message-service]}
+                                 {:keys [data message-id]}]
+  (let [channel (:channel data)
+        most-recent (messages/most-recent message-service channel 100)]
+    (s/put! conn (encode-message {:message-id message-id
+                                  :event :joined-channel
+                                  :data {:most-recent-messages most-recent :channel channel}}))))
 
 (defmethod action :leave-channel leave-channel [{:keys [conn]}
                                   {:keys [event-bus channel-service]}
@@ -59,18 +71,12 @@
         channels (channel/list-all channel-service username)]
 
     ;Adds missing channels to channel-access
-    (reduce
-     (fn [access channel]
-       (when (not (get @access (:id channel)))
-         (swap! access assoc (:id channel) (:members channel)))
-       access)
-     channel-access
-     channels)
+    (update-channel-access channel-access channels)
     (s/put! conn (encode-message {:event :all-channels
                                   :data {:channels channels}}))))
 
 (defmethod action :send-message message [{:keys [conn username]}
-                            {:keys [event-bus message-service]}
+                            {:keys [event-bus channel-access message-service]}
                             {:keys [data] :as msg}]
   (let [channel (:channel data)
         created-message (messages/create
@@ -78,12 +84,7 @@
                          (->
                           (select-keys data [:channel :body :client-id])
                           (assoc :user username)))]
-    (bus/publish!
-     event-bus
-     channel
-     (encode-message
-      {:data created-message
-       :event :new-message}))))
+    (publish-to event-bus (get @channel-access channel) :new-message created-message)))
 
 (defmethod action :default [_ _ msg]
   (log/warn "Unhandled action" msg))
@@ -136,6 +137,7 @@
                  {:timeout 1e4})
 
                 ;; Subscribe for messages directed to the user
+                (log/info "Subscribe for:" (get-in authentication [:data :username]))
                 (s/connect
                  (bus/subscribe event-bus (get-in authentication [:data :username]))
                  conn

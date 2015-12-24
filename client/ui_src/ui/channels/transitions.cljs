@@ -15,8 +15,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn add-created-channel
   [db [created-channel]]
-  (-> (update db :channels assoc (:id created-channel) (enrich-channel created-channel))
-      (assoc :current-channel (:id created-channel))))
+  (-> (update db :channels assoc (:id created-channel) (enrich-channel created-channel))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
