@@ -74,4 +74,4 @@
    :current-channel (s/maybe ChannelIdentifier)
    :new-channel-page NewChannelPage
    :channels Channels
-   :message-handlers {s/Str s/Any}})                      ;TODO Must be a function with a given signature
+   :message-handlers {s/Str s/Bool}})

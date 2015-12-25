@@ -53,9 +53,9 @@
 (register-handler
  :connection/response-handler
  [default-middleware]
- (fn [db [message-id callback]]
+ (fn [db [message-id]]
    (.log js/console "GOT HERE!")
-   (update db :message-handlers assoc message-id callback)))
+   (update db :message-handlers assoc message-id true)))
 
 (register-handler
  :connection/update-address

@@ -17,13 +17,10 @@
       (log/warn "Write action failed ~{(js->clj e)}"))))
 
 (defn do-write
-  ([f]
-   (do-write f nil))
-  ([f g]
-   (after (fn [db [data]]
-            (let [message-id (str (uuid/make-random-uuid))]
-              (when g
-                (dispatch [:connection/response-handler message-id g]))
-              (dispatch [:connection/write-action (assoc (f data)
-                                                    :message-id
-                                                    message-id)]))))))
+  [f]
+  (after (fn [db [data]]
+           (let [message-id (str (uuid/make-random-uuid))]
+             (dispatch [:connection/response-handler message-id])
+             (dispatch [:connection/write-action (assoc (f data)
+                                                   :message-id
+                                                   message-id)])))))

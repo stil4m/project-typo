@@ -14,7 +14,8 @@
 ;; Created Channel
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn add-created-channel
-  [db [created-channel]]
+  [db [created-channel is-response]]
+  (.log js/console (str "Is response" is-response))
   (-> (update db :channels assoc (:id created-channel) (enrich-channel created-channel))))
 
 
