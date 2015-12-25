@@ -70,7 +70,9 @@
 ;; Create Channel
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (s/defschema CreateChannel
-  {:name s/Str})
+  {:name s/Str
+   :room s/Bool
+   :members [UserIdentifier]})
 
 (s/defn create-channel
   [d :- CreateChannel]

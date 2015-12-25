@@ -33,7 +33,7 @@
   []
   (let [route (subscribe [:route-state])
         current-channel (subscribe [:current-channel])
-        channels-state (subscribe [:channels-state])
+        channels-state (subscribe [:open-channels-state])
         current-user (subscribe [:current-user])]
     (fn []
       [:div.window.flex.flex-row

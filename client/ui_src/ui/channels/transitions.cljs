@@ -3,19 +3,20 @@
 
 (defn enrich-channel
   [channel]
-  (assoc channel :room (get channel :queue true)            ; TODO, temporarily added to be schema compliant (should be set when starting a room/conversation)
-                 :unread (max (:unread channel) 0)
-                 :queue (vec (:queue channel))
-                 :messages (vec (:messages channel))
-                 :members (vec (:members channel))))
+  (.log js/console "Enrich")
+  (.log js/console (str channel))
+  (assoc channel :room (get channel :room true)
+                 :unread 0
+                 :queue []
+                 :messages []))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Created Channel
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn add-created-channel
-  [db [created-channel]]
-  (-> (update db :channels assoc (:id created-channel) (enrich-channel created-channel))
-      (assoc :current-channel (:id created-channel))))
+  [db [created-channel is-response]]
+  (.log js/console (str "Is response" is-response))
+  (-> (update db :channels assoc (:id created-channel) (enrich-channel created-channel))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

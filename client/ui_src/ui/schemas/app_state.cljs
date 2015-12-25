@@ -41,6 +41,7 @@
   {:id ChannelIdentifier
    :name s/Str
    :room s/Bool
+   :private s/Bool
    :unread s/Int
    :messages [PersistedMessage]
    :members [UserIdentifier]
@@ -72,4 +73,5 @@
    :subscribed-channels [ChannelIdentifier]
    :current-channel (s/maybe ChannelIdentifier)
    :new-channel-page NewChannelPage
-   :channels Channels})
+   :channels Channels
+   :message-handlers {s/Str s/Bool}})

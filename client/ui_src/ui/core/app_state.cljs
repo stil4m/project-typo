@@ -16,4 +16,5 @@
    :people []
    :current-channel nil
    :subscribed-channels []
+   :message-handlers {}
    :channels {}})

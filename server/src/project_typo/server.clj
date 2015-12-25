@@ -15,29 +15,44 @@
             [clj-time.coerce :as coerce])
   (:import [java.io ByteArrayInputStream ByteArrayOutputStream]))
 
+(defn update-channel-access
+  [channel-access channels]
+  (reduce
+   (fn [access channel]
+     (when (not (get @access (:id channel)))
+       (swap! access assoc (:id channel) (:members channel)))
+     access)
+   channel-access
+   channels))
+
+(defn publish-to
+  ([event-bus members event data]
+   (publish-to event-bus members event data nil))
+  ([event-bus members event data message-id]
+   ;TODO At this point it would be great to have a plugin point
+   (let [message (encode-message {:event event :data data :message-id message-id})]
+     (doall (map
+             #(bus/publish! event-bus % message)
+             members)))))
 
 (defmulti action (fn [conn component m] (:action m)))
 
-(defmethod action :create-channel create-channel [{:keys [conn]}
-                                   {:keys [event-bus channel-service]}
+(defmethod action :create-channel create-channel [{:keys [username conn]}
+                                   {:keys [event-bus channel-access channel-service]}
                                    msg]
-  (let [res (channel/create channel-service {:name (get-in msg [:data :name])})]
+  (let [res (channel/create channel-service (:data msg) username)]
     (log/info "created channel" res)
-    (s/put! conn (encode-message {:event :channel-created
-                                  :data res}))))
+    (update-channel-access channel-access [res])
+    (publish-to event-bus (:members res) :channel-created res (:message-id msg))))
 
 (defmethod action :join-channel join-channel [{:keys [subscriptions conn]}
-                                 {:keys [event-bus message-service]}
-                                 {:keys [data]}]
-  (let [channel (:channel data)]
-    (s/connect
-     (bus/subscribe event-bus channel)
-     conn
-     {:timeout 1e4})
-    (bus/publish! event-bus channel (encode-message
-                                     {:data {:most-recent-messages (messages/most-recent message-service channel 100)
-                                             :channel channel}
-                                      :event :joined-channel}))))
+                                 {:keys [event-bus channel-access message-service]}
+                                 {:keys [data message-id]}]
+  (let [channel (:channel data)
+        most-recent (messages/most-recent message-service channel 100)]
+    (s/put! conn (encode-message {:message-id message-id
+                                  :event :joined-channel
+                                  :data {:most-recent-messages most-recent :channel channel}}))))
 
 (defmethod action :leave-channel leave-channel [{:keys [conn]}
                                   {:keys [event-bus channel-service]}
@@ -50,14 +65,18 @@
   (s/put! conn (encode-message {:event :all-people
                                 :data {:people (users/list-all user-service)}})))
 
-(defmethod action :list-channels list-channels [{:keys [conn]}
-                                  {:keys [channel-service]}
-                                  _]
-  (s/put! conn (encode-message {:event :all-channels
-                                :data {:channels (channel/list-all channel-service)}})))
+(defmethod action :list-channels list-channels [context component _]
+  (let [{:keys [channel-service channel-access]} component
+        {:keys [conn username]} context
+        channels (channel/list-all channel-service username)]
+
+    ;Adds missing channels to channel-access
+    (update-channel-access channel-access channels)
+    (s/put! conn (encode-message {:event :all-channels
+                                  :data {:channels channels}}))))
 
 (defmethod action :send-message message [{:keys [conn username]}
-                            {:keys [event-bus message-service]}
+                            {:keys [event-bus channel-access message-service]}
                             {:keys [data] :as msg}]
   (let [channel (:channel data)
         created-message (messages/create
@@ -65,12 +84,7 @@
                          (->
                           (select-keys data [:channel :body :client-id])
                           (assoc :user username)))]
-    (bus/publish!
-     event-bus
-     channel
-     (encode-message
-      {:data created-message
-       :event :new-message}))))
+    (publish-to event-bus (get @channel-access channel) :new-message created-message)))
 
 (defmethod action :default [_ _ msg]
   (log/warn "Unhandled action" msg))
@@ -85,7 +99,9 @@
                authentication (decode-message msg)
                authentication-call? (= :authenticate (:action authentication))
                connections (:connections component)
-               context {:username (get-in authentication [:data :username])
+               event-bus (:event-bus component)
+               username (get-in authentication [:data :username])
+               context {:username username
                         :full-name (get-in authentication [:data :full-name])
                         :conn conn
                         :subscriptions (atom {})}]
@@ -114,6 +130,19 @@
                  conn #_(s/buffer 100 conn)
                  {:timeout 1e4})
 
+                ;; Subscribe for messages directed to all
+                (s/connect
+                 (bus/subscribe event-bus :all)
+                 conn
+                 {:timeout 1e4})
+
+                ;; Subscribe for messages directed to the user
+                (log/info "Subscribe for:" (get-in authentication [:data :username]))
+                (s/connect
+                 (bus/subscribe event-bus (get-in authentication [:data :username]))
+                 conn
+                 {:timeout 1e4})
+
                 ;; Consume messsages from connected client
                 (s/consume
                  #(action context component (decode-message %))
@@ -136,8 +165,10 @@
   (start [component]
     (log/info "Starting server on port " port)
     (let [connections (atom {})
+          channel-access (atom {})
           instance (http/start-server (partial chat-handler (assoc component
-                                                             :connections connections)) {:port port})]
+                                                             :connections connections
+                                                             :channel-access channel-access)) {:port port})]
       (assoc component
              :instance instance
              :connections connections)))

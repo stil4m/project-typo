@@ -44,6 +44,20 @@
      (assoc-in db [:connection :ws] websocket))))
 
 (register-handler
+ :connection/write-action
+ [default-middleware]
+ (fn [db [action]]
+   (websocket/write-action db action)
+   db))
+
+(register-handler
+ :connection/response-handler
+ [default-middleware]
+ (fn [db [message-id]]
+   (.log js/console "GOT HERE!")
+   (update db :message-handlers assoc message-id true)))
+
+(register-handler
  :connection/update-address
  [default-middleware]
  (fn [db [new-address]]

@@ -6,7 +6,7 @@
             [cheshire.core :as json]
             [project-typo.constants :as constants]))
 
-(def views {:_id "_design/typo"
+(def views {:_id "design_typo"
             :views {:all-channels
                     {:map "function(doc) {if (doc.type == 'channel') {emit(doc._id, doc);}}"}
                     :all-users
